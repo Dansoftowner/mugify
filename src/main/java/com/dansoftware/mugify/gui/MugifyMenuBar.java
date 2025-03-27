@@ -20,6 +20,7 @@ public class MugifyMenuBar extends MenuBar {
     private void buildMenuStructure() {
         this.getMenus().add(buildFileMenu());
         this.getMenus().add(buildViewMenu());
+        this.getMenus().add(buildHelpMenu());
     }
 
     private Menu buildFileMenu() {
@@ -77,14 +78,44 @@ public class MugifyMenuBar extends MenuBar {
     private Menu buildViewMenu() {
         var menu = new Menu("View");
 
-        ToggleGroup itemGrp = new ToggleGroup();
+        var viewportMenu = new Menu("Views");
+
+        ToggleGroup viewportGroup = new ToggleGroup();
         for (MugGrid.Viewport value : MugGrid.Viewport.values()) {
             RadioMenuItem item = new RadioMenuItem(value.name());
-            item.setToggleGroup(itemGrp);
+            item.setToggleGroup(viewportGroup);
             item.setSelected(mugGrid.getViewport() == value);
             item.setOnAction(_ -> mugGrid.setViewport(value));
-            menu.getItems().add(item);
+            viewportMenu.getItems().add(item);
         }
+
+        menu.getItems().add(viewportMenu);
+
+        var themeGroup = new ToggleGroup();
+
+        var uiThemeMenu = new Menu("UI theme");
+        var darkThemeItem = new RadioMenuItem("Dark");
+        var lightThemeItem = new RadioMenuItem("Light");
+        var syncThemeItem = new RadioMenuItem("Sync with OS");
+
+        darkThemeItem.setToggleGroup(themeGroup);
+        lightThemeItem.setToggleGroup(themeGroup);
+        syncThemeItem.setToggleGroup(themeGroup);
+
+        uiThemeMenu.getItems().addAll(darkThemeItem, lightThemeItem, syncThemeItem);
+        menu.getItems().add(uiThemeMenu);
+
+        return menu;
+    }
+
+    private Menu buildHelpMenu() {
+        var menu = new Menu("Help");
+
+        var guideItem = new MenuItem("User Guide");
+        var aboutItem = new MenuItem("About");
+
+        menu.getItems().add(guideItem);
+        menu.getItems().add(aboutItem);
 
         return menu;
     }
