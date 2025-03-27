@@ -22,11 +22,11 @@ public class Mug extends Group implements MugLike {
     public static final double DEFAULT_RADIUS = 50;
     public static final double DEFAULT_HEIGHT = 100;
 
-    public static final Color DEFAULT_OUTER_COLOR = Color.BLUE;
-    public static final Color DEFAULT_INNER_COLOR = Color.BLACK;
+    public static final Color DEFAULT_OUTER_COLOR = new Color(0.2196, 0.7961, 0.6078, 1.0);
+    public static final Color DEFAULT_INNER_COLOR = new Color(0.0706, 0.3216, 0.2275, 1.0);
     public static final Color DEFAULT_BOTTOM_COLOR = Color.GRAY;
 
-    public static final Color DEFAULT_HANDLE_COLOR = Color.RED;
+    public static final Color DEFAULT_HANDLE_COLOR = new Color(0.3922, 0.2196, 0.2353, 1.0);
     public static final double DEFAULT_HANDLE_RADIUS = 25;
     public static final double DEFAULT_HANDLE_WIDTH = 10;
 
