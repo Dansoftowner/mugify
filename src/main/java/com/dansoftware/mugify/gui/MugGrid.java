@@ -56,12 +56,15 @@ public class MugGrid extends GridPane {
 
     private SubScene createMugSubScene(Mug mug, boolean rotatable) {
 
-        PointLight pointLight = new PointLight(Color.WHITE);
+        PointLight pointLight = new PointLight(Color.GRAY);
         pointLight.setTranslateX(-100);
         pointLight.setTranslateY(-100);
         pointLight.setTranslateZ(-100);
-        AmbientLight ambientLight = new AmbientLight(Color.WHITE);
-        mug.getChildren().addAll(/*pointLight,*/ ambientLight);
+
+        if (rotatable)
+            mug.getChildren().add(pointLight);
+
+        mug.getChildren().add(new AmbientLight(Color.WHITE));
 
         // Kamera
         PerspectiveCamera camera = new PerspectiveCamera(true);
