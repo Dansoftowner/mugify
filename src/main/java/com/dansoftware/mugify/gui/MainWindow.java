@@ -6,17 +6,25 @@ import javafx.scene.control.Alert;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.Style;
 
 public class MainWindow extends Stage {
+    private final JMetro jMetro;
+
     public MainWindow() {
+        this.jMetro = new JMetro(Style.DARK);
+
         var mainView = new MainView();
 
         var scene = new Scene(mainView);
-        scene.setFill(Color.WHITESMOKE);
+        scene.getStylesheets().add(MainWindow.class.getResource("/com/dansoftware/mugify/css/styles.css").toExternalForm());
+        scene.setFill(Color.TRANSPARENT);
 
         setTitle("Mugify");
         setScene(scene);
 
+        this.jMetro.setScene(scene);
         setSize();
         centerOnScreen();
         initErrorHandling();
@@ -43,5 +51,9 @@ public class MainWindow extends Stage {
                 alert.showAndWait();
             });
         });
+    }
+
+    public JMetro getjMetro() {
+        return jMetro;
     }
 }

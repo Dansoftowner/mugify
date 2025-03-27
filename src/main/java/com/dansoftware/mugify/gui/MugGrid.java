@@ -146,6 +146,8 @@ public class MugGrid extends GridPane {
             });
         }
 
+        subScene.setFill(Color.TRANSPARENT);
+
         return subScene;
     }
 
