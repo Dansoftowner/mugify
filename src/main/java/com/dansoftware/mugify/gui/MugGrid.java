@@ -168,8 +168,12 @@ public class MugGrid extends GridPane {
 
         for (int i = 0; i < subScenes.size(); i++) {
             SubScene scene = subScenes.get(i);
+            scene.setVisible(true);
+            scene.setManaged(true);
             scene.widthProperty().bind(this.widthProperty().divide(2));
             scene.heightProperty().bind(this.heightProperty().divide(2));
+            GridPane.setRowSpan(scene, 1);
+            GridPane.setColumnSpan(scene, 1);
             GridPane.setConstraints(scene, positions[i][0], positions[i][1]);
         }
     }
@@ -177,10 +181,12 @@ public class MugGrid extends GridPane {
     private void showSubScene(int subSceneIndex) {
         for (int i = 0; i < subScenes.size(); i++) {
             subScenes.get(i).setVisible(i == subSceneIndex);
+            subScenes.get(i).setManaged(i == subSceneIndex);
         }
 
         var subScene = subScenes.get(subSceneIndex);
 
+        GridPane.setConstraints(subScene, 0, 0);
         GridPane.setColumnSpan(subScene, 2);
         GridPane.setRowSpan(subScene, 2);
         subScene.widthProperty().bind(this.widthProperty());

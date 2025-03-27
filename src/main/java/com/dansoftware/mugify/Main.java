@@ -1,5 +1,6 @@
 package com.dansoftware.mugify;
 
+import com.dansoftware.mugify.gui.MainView;
 import com.dansoftware.mugify.gui.MugGrid;
 import com.dansoftware.mugify.mug.MugBoundaries;
 import com.dansoftware.mugify.mug.MugRandomizer;
@@ -16,13 +17,11 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
-        var mugGrid = new MugGrid();
-        mugGrid.getMugTuple().setHeight(MugBoundaries.MAX_HEIGHT);
-        mugGrid.getMugTuple().setHandleRadius(MugBoundaries.MAX_HANDLE_RADIUS);
-        mugGrid.setViewport(MugGrid.Viewport.SCENE_3D);
 
+        var mainView = new MainView();
+        var mugGrid = mainView.getMugGrid();
 
-        var scene = new Scene(mugGrid);
+        var scene = new Scene(mainView);
         scene.setFill(Color.WHITESMOKE);
 
         stage.setTitle("Hello!");
@@ -42,6 +41,7 @@ public class Main extends Application {
 
                 });
             }
+
         }).start();
     }
 
