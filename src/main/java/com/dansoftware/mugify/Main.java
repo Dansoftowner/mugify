@@ -19,7 +19,7 @@ public class Main extends Application {
         var mugGrid = new MugGrid();
         mugGrid.getMugTuple().setHeight(MugBoundaries.MAX_HEIGHT);
         mugGrid.getMugTuple().setHandleRadius(MugBoundaries.MAX_HANDLE_RADIUS);
-
+        mugGrid.setViewport(MugGrid.Viewport.SCENE_3D);
 
 
         var scene = new Scene(mugGrid);
