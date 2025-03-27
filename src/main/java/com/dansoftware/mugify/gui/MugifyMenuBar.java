@@ -1,7 +1,11 @@
 package com.dansoftware.mugify.gui;
 
+import com.dansoftware.mugify.io.MugIO;
 import com.dansoftware.mugify.mug.MugRandomizer;
 import javafx.scene.control.*;
+import javafx.stage.FileChooser;
+
+import java.io.IOException;
 
 public class MugifyMenuBar extends MenuBar {
     private final MugGrid mugGrid;
@@ -21,16 +25,53 @@ public class MugifyMenuBar extends MenuBar {
     private Menu buildFileMenu() {
         var menu = new Menu("File");
 
-        var fileOpenItem = new MenuItem("Open file");
+        var fileOpenItem = fileOpenMenuItem();
         menu.getItems().add(fileOpenItem);
 
-        var fileSaveItem = new MenuItem("Save file");
+        var fileSaveItem = fileSaveMenuItem();
         menu.getItems().add(fileSaveItem);
 
         var generateItem = new MenuItem("Generate new mug");
         generateItem.setOnAction(_ -> randomizer.apply(mugGrid.getMugTuple()));
         menu.getItems().add(generateItem);
         return menu;
+    }
+
+    private MenuItem fileSaveMenuItem() {
+        var fileSaveItem = new MenuItem("Save file");
+        fileSaveItem.setOnAction(_ -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Mugify File");
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("Mugify Files (*.mugify)", "*.mugify")
+            );
+            fileChooser.setInitialFileName("mug.mugify");
+            var outputFile = fileChooser.showSaveDialog(getScene().getWindow());
+            try {
+                MugIO.saveToJson(outputFile.getAbsolutePath(), mugGrid.getMugTuple());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return fileSaveItem;
+    }
+
+    private MenuItem fileOpenMenuItem() {
+        var fileOpenItem = new MenuItem("Open file");
+        fileOpenItem.setOnAction(_ -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open Mugify File");
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("Mugify Files (*.mugify)", "*.mugify")
+            );
+            var file = fileChooser.showOpenDialog(getScene().getWindow());
+            try {
+                MugIO.loadFromJson(file.getAbsolutePath(), mugGrid.getMugTuple());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return fileOpenItem;
     }
 
     private Menu buildViewMenu() {
@@ -47,6 +88,4 @@ public class MugifyMenuBar extends MenuBar {
 
         return menu;
     }
-
-
 }
