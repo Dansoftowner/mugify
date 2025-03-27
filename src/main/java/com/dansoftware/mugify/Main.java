@@ -42,7 +42,7 @@ public class Main extends Application {
                 });
             }
 
-        }).start();
+        });
     }
 
     public static void main(String[] args) {
