@@ -63,7 +63,7 @@ public class MugGrid extends GridPane {
     }
 
     private void initViewportBehaviours() {
-        this.viewport.addListener((obs, oldValue, newValue) -> {
+        this.viewport.addListener((_, _, newValue) -> {
             subScenes.forEach(scene -> {
                 scene.widthProperty().unbind();
                 scene.heightProperty().unbind();

@@ -66,7 +66,7 @@ public class Mug extends Group implements MugLike {
 
         this.getChildren().addAll(mugBody, mugHandle);
 
-        this.handleRadius.addListener((obs, oldValue, newValue) -> {
+        this.handleRadius.addListener((_, _, newValue) -> {
 
             double handleRadius = (double) newValue;
             while (MugBoundaries.HEIGHT_HANDLE_RADIUS_RATIO > this.height.get() / handleRadius) {
