@@ -11,6 +11,7 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 ext {
@@ -36,6 +37,9 @@ javafx {
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.12.1'
+    implementation 'org.jfxtras:jmetro:11.6.16'
+    implementation 'com.github.Dansoftowner:jSystemThemeDetector:3.6'
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }
