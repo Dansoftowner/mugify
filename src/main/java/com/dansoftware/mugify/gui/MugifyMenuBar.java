@@ -140,11 +140,14 @@ public class MugifyMenuBar extends MenuBar {
         sceneProperty().addListener((_, _, _) -> {
             getScene().windowProperty().addListener((_, _, win) -> {
                 var window = (MainWindow) win;
-                darkThemeItem.setSelected(Style.DARK == window.getTransitTheme().getStyle());
-                darkThemeItem.setOnAction(_ -> window.getTransitTheme().setStyle(Style.DARK));
+                darkThemeItem.setSelected(Style.DARK == window.getTransitStyle());
+                darkThemeItem.setOnAction(_ -> window.setTransitStyle(Style.DARK));
 
-                lightThemeItem.setSelected(Style.LIGHT == window.getTransitTheme().getStyle());
-                lightThemeItem.setOnAction(_ -> window.getTransitTheme().setStyle(Style.LIGHT));
+                lightThemeItem.setSelected(Style.LIGHT == window.getTransitStyle());
+                lightThemeItem.setOnAction(_ -> window.setTransitStyle(Style.LIGHT));
+
+                syncThemeItem.setSelected(window.isSyncTheme());
+                syncThemeItem.setOnAction(_ -> window.setSyncTheme(true));
             });
         });
 
