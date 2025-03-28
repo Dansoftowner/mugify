@@ -4,6 +4,9 @@ import com.dansoftware.mugify.io.MugIO;
 import com.dansoftware.mugify.mug.MugRandomizer;
 import com.pixelduke.transit.Style;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 
 import java.io.IOException;
@@ -51,15 +54,19 @@ public class MugifyMenuBar extends MenuBar {
         menu.textProperty().bind(val("menu_file"));
 
         var fileOpenItem = fileOpenMenuItem();
+        fileOpenItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
         menu.getItems().add(fileOpenItem);
 
         var fileSaveItem = fileSaveMenuItem();
+        fileSaveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
         menu.getItems().add(fileSaveItem);
 
         var generateItem = new MenuItem();
         generateItem.textProperty().bind(val("menu_file_generate"));
         generateItem.setOnAction(_ -> randomizer.apply(mugGrid.getMugTuple()));
+        generateItem.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
         menu.getItems().add(generateItem);
+
         return menu;
     }
 
