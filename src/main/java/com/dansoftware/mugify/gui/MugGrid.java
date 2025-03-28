@@ -5,16 +5,17 @@ import com.dansoftware.mugify.mug.MugTuple;
 import com.pixelduke.transit.TransitStyleClass;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Insets;
 import javafx.scene.*;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
+import javafx.scene.control.Label;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
+
+import static com.dansoftware.mugify.i18n.I18NUtils.val;
 
 public class MugGrid extends GridPane {
 
@@ -40,21 +41,21 @@ public class MugGrid extends GridPane {
 
     private final MugTuple mugTuple;
 
-    private final List<Mug> mugs = List.of(
-            new Mug(),
-            new Mug(),
-            new Mug(),
-            new Mug()
+    private final Map<Viewport, Mug> mugs = Map.of(
+            Viewport.SIDE_SCENE, new Mug(),
+            Viewport.TOP_SCENE, new Mug(),
+            Viewport.BOTTOM_SCENE, new Mug(),
+            Viewport.SCENE_3D, new Mug()
     );
 
-    private final List<SubScene> subScenes;
+    private final Map<Viewport, SubScene> subScenes;
 
     private final ObjectProperty<Viewport> viewport;
 
     public MugGrid() {
-        this.mugTuple = new MugTuple(mugs);
+        this.mugTuple = new MugTuple(mugs.values());
         this.viewport = new SimpleObjectProperty<>();
-        this.subScenes = new LinkedList<>();
+        this.subScenes = new HashMap<>();
         this.init();
         this.getStyleClass().add(TransitStyleClass.BACKGROUND);
     }
@@ -76,9 +77,10 @@ public class MugGrid extends GridPane {
 
     private void initViewportBehaviours() {
         this.viewport.addListener((_, _, newValue) -> {
-            subScenes.forEach(scene -> {
-                scene.widthProperty().unbind();
-                scene.heightProperty().unbind();
+            subScenes.forEach((_, scene) -> {
+                var vBox = (VBox) scene.getParent();
+                vBox.prefWidthProperty().unbind();
+                vBox.prefHeightProperty().unbind();
             });
 
             if (newValue == Viewport.ALL_SCENES) {
@@ -86,31 +88,39 @@ public class MugGrid extends GridPane {
                 return;
             }
 
-            var dict = Map.of(
-                    Viewport.SIDE_SCENE, 0,
-                    Viewport.TOP_SCENE, 1,
-                    Viewport.BOTTOM_SCENE, 2,
-                    Viewport.SCENE_3D, 3
-            );
-            showSubScene(dict.get(newValue));
+            showSubScene(newValue);
         });
     }
 
     private void generateScenes() {
-        for (int i = 0; i < mugs.size(); i++) {
-            Mug mug = mugs.get(i);
-            boolean rotatable = (i == mugs.size() - 1);  // only the last scene will be rotatable
+        for (Viewport vp : mugs.keySet()) {
+            Mug mug = mugs.get(vp);
+            boolean rotatable = (vp == Viewport.SCENE_3D);  // only the last scene will be rotatable
             SubScene scene = createMugSubScene(mug, rotatable);
-            getChildren().add(scene);
-            this.subScenes.add(scene);
+
+            var label = new Label();
+            label.textProperty().bind(val(vp.id));
+            label.getStyleClass().add("viewport-label");
+
+            VBox vBox = new VBox(label, scene);
+            vBox.setMinSize(0, 0);
+
+            scene.widthProperty().bind(vBox.widthProperty());
+            scene.heightProperty().bind(vBox.heightProperty().subtract(label.heightProperty()));
+
+            VBox.setVgrow(scene, Priority.ALWAYS);
+            VBox.setMargin(label, new Insets(5, 1, 0, 5));
+
+            getChildren().add(vBox);
+            this.subScenes.put(vp, scene);
         }
     }
 
     private void rotateMugs() {
         // mugs[0] is side-view by default
-        setMugRotation(mugs.get(2), 272.5, 0.5); // bottom-view
-        setMugRotation(mugs.get(1), 90.5, 1.5); // top-view
-        setMugRotation(mugs.get(3), 37.5, 20.5); // 3D View default position
+        setMugRotation(mugs.get(Viewport.BOTTOM_SCENE), 272.5, 0.5); // bottom-view
+        setMugRotation(mugs.get(Viewport.TOP_SCENE), 90.5, 1.5); // top-view
+        setMugRotation(mugs.get(Viewport.SCENE_3D), 37.5, 20.5); // 3D View default position
     }
 
     private SubScene createMugSubScene(Mug mug, boolean rotatable) {
@@ -173,38 +183,40 @@ public class MugGrid extends GridPane {
 
     private void showAllScenes() {
         // the four position of the mugs in the grid
-        var positions = new int[][] {
-                {0, 0},
-                {0, 1},
-                {1, 0},
-                {1, 1}
-        };
+        var positions = Map.of(
+                Viewport.SIDE_SCENE, new int[] {0, 0},
+                Viewport.TOP_SCENE, new int[] {0, 1},
+                Viewport.BOTTOM_SCENE, new int[] {1, 0},
+                Viewport.SCENE_3D, new int[] {1, 1}
+        );
 
-        for (int i = 0; i < subScenes.size(); i++) {
-            SubScene scene = subScenes.get(i);
-            scene.setVisible(true);
-            scene.setManaged(true);
-            scene.widthProperty().bind(this.widthProperty().divide(2));
-            scene.heightProperty().bind(this.heightProperty().divide(2));
-            GridPane.setRowSpan(scene, 1);
-            GridPane.setColumnSpan(scene, 1);
-            GridPane.setConstraints(scene, positions[i][0], positions[i][1]);
+        for (Viewport vp : subScenes.keySet()) {
+            SubScene scene = subScenes.get(vp);
+            var vBox = (VBox) scene.getParent();
+            vBox.setVisible(true);
+            vBox.setManaged(true);
+            vBox.prefWidthProperty().bind(this.widthProperty().divide(2));
+            vBox.prefHeightProperty().bind(this.heightProperty().divide(2));
+            GridPane.setRowSpan(vBox, 1);
+            GridPane.setColumnSpan(vBox, 1);
+            GridPane.setConstraints(vBox, positions.get(vp)[0], positions.get(vp)[1]);
         }
     }
 
-    private void showSubScene(int subSceneIndex) {
-        for (int i = 0; i < subScenes.size(); i++) {
-            subScenes.get(i).setVisible(i == subSceneIndex);
-            subScenes.get(i).setManaged(i == subSceneIndex);
+    private void showSubScene(Viewport viewport) {
+        for (Viewport vp : subScenes.keySet()) {
+            subScenes.get(vp).getParent().setVisible(vp == viewport);
+            subScenes.get(vp).getParent().setManaged(vp == viewport);
         }
 
-        var subScene = subScenes.get(subSceneIndex);
+        var subScene = subScenes.get(viewport);
+        var vBox = (VBox) subScene.getParent();
 
-        GridPane.setConstraints(subScene, 0, 0);
-        GridPane.setColumnSpan(subScene, 2);
-        GridPane.setRowSpan(subScene, 2);
-        subScene.widthProperty().bind(this.widthProperty());
-        subScene.heightProperty().bind(this.heightProperty());
+        GridPane.setConstraints(vBox, 0, 0);
+        GridPane.setColumnSpan(vBox, 2);
+        GridPane.setRowSpan(vBox, 2);
+        vBox.prefWidthProperty().bind(this.widthProperty());
+        vBox.prefHeightProperty().bind(this.heightProperty());
     }
 
     public Viewport getViewport() {

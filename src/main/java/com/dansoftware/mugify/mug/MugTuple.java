@@ -6,7 +6,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.paint.Color;
 
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 
 public class MugTuple implements MugLike {
@@ -23,7 +23,7 @@ public class MugTuple implements MugLike {
     private final ObjectProperty<Color> handleColor;
     private final DoubleProperty handleWidth;
 
-    public MugTuple(List<Mug> mugs) {
+    public MugTuple(Collection<Mug> mugs) {
         this.borderThickness = new SimpleDoubleProperty(Mug.DEFAULT_BORDER_THICKNESS);
         this.radius = new SimpleDoubleProperty(Mug.DEFAULT_RADIUS);
         this.height = new SimpleDoubleProperty(Mug.DEFAULT_HEIGHT);
@@ -33,8 +33,8 @@ public class MugTuple implements MugLike {
         this.handleRadius = new SimpleDoubleProperty(Mug.DEFAULT_HANDLE_RADIUS);
         this.handleColor = new SimpleObjectProperty<>(Mug.DEFAULT_HANDLE_COLOR);
         this.handleWidth = new SimpleDoubleProperty(Mug.DEFAULT_HANDLE_WIDTH);
-        this.mugs = Collections.unmodifiableList(mugs);
-        this.init(mugs);
+        this.mugs = List.copyOf(mugs);
+        this.init(this.mugs);
     }
 
     private void init(List<Mug> mugs) {

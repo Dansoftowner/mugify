@@ -2,4 +2,10 @@
     -fx-background-color: transparent;
 }
 
-
+.viewport-label {
+    -fx-padding: 0 10px;
+    -fx-background-color: rgba(0, 0, 0, 0.4);
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-font-size: 2em;
+}
