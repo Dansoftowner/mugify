@@ -6,13 +6,16 @@ public class MainView extends BorderPane {
 
     private final MugGrid mugGrid;
     private final MugifyMenuBar menuBar;
+    private final MugEditorTabPane mugEditorTabPane;
 
     public MainView() {
         mugGrid = new MugGrid();
         menuBar = new MugifyMenuBar(mugGrid);
+        mugEditorTabPane = new MugEditorTabPane(mugGrid.getMugTuple());
 
         setTop(menuBar);
         setCenter(mugGrid);
+        setRight(mugEditorTabPane);
 
         // for proper responsiveness
         mugGrid.maxWidthProperty().bind(this.widthProperty());

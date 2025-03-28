@@ -9,3 +9,8 @@
     -fx-border-radius: 5px;
     -fx-font-size: 2em;
 }
+
+.title-label {
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+}
