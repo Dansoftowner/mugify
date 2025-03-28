@@ -7,6 +7,9 @@ import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 
 import java.io.IOException;
+import java.util.Locale;
+
+import static com.dansoftware.mugify.i18n.I18NUtils.*;
 
 public class MugifyMenuBar extends MenuBar {
     private final MugGrid mugGrid;
@@ -21,11 +24,31 @@ public class MugifyMenuBar extends MenuBar {
     private void buildMenuStructure() {
         this.getMenus().add(buildFileMenu());
         this.getMenus().add(buildViewMenu());
+        this.getMenus().add(buildLanguageMenu());
         this.getMenus().add(buildHelpMenu());
     }
 
+    private Menu buildLanguageMenu() {
+        Menu menu = new Menu();
+        menu.textProperty().bind(val("menu_language"));
+
+        ToggleGroup languageGroup = new ToggleGroup();
+
+        for (Locale locale : getSupportedLocales()) {
+            RadioMenuItem item = new RadioMenuItem(locale.getDisplayLanguage());
+            item.setToggleGroup(languageGroup);
+            item.setOnAction(_ -> setLocale(locale));
+            if (locale.equals(Locale.getDefault()))
+                item.setSelected(true);
+            menu.getItems().add(item);
+        }
+
+        return menu;
+    }
+
     private Menu buildFileMenu() {
-        var menu = new Menu("File");
+        var menu = new Menu();
+        menu.textProperty().bind(val("menu_file"));
 
         var fileOpenItem = fileOpenMenuItem();
         menu.getItems().add(fileOpenItem);
@@ -33,57 +56,67 @@ public class MugifyMenuBar extends MenuBar {
         var fileSaveItem = fileSaveMenuItem();
         menu.getItems().add(fileSaveItem);
 
-        var generateItem = new MenuItem("Generate new mug");
+        var generateItem = new MenuItem();
+        generateItem.textProperty().bind(val("menu_file_generate"));
         generateItem.setOnAction(_ -> randomizer.apply(mugGrid.getMugTuple()));
         menu.getItems().add(generateItem);
         return menu;
     }
 
     private MenuItem fileSaveMenuItem() {
-        var fileSaveItem = new MenuItem("Save file");
+        var fileSaveItem = new MenuItem();
+        fileSaveItem.textProperty().bind(val("menu_file_save"));
         fileSaveItem.setOnAction(_ -> {
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Save Mugify File");
+            fileChooser.setTitle(val("filechooser_save_title").get());
             fileChooser.getExtensionFilters().add(
-                    new FileChooser.ExtensionFilter("Mugify Files (*.mugify)", "*.mugify")
+                    new FileChooser.ExtensionFilter(val("filechooser_mugify_filter").get(), "*.mugify")
             );
             fileChooser.setInitialFileName("mug.mugify");
             var outputFile = fileChooser.showSaveDialog(getScene().getWindow());
-            try {
-                MugIO.saveToJson(outputFile.getAbsolutePath(), mugGrid.getMugTuple());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            if (outputFile != null) {
+                try {
+                    MugIO.saveToJson(outputFile.getAbsolutePath(), mugGrid.getMugTuple());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
         return fileSaveItem;
     }
 
     private MenuItem fileOpenMenuItem() {
-        var fileOpenItem = new MenuItem("Open file");
+        var fileOpenItem = new MenuItem();
+        fileOpenItem.textProperty().bind(val("menu_file_open"));
         fileOpenItem.setOnAction(_ -> {
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Open Mugify File");
+            fileChooser.setTitle(val("filechooser_open_title").get());
             fileChooser.getExtensionFilters().add(
-                    new FileChooser.ExtensionFilter("Mugify Files (*.mugify)", "*.mugify")
+                    new FileChooser.ExtensionFilter(val("filechooser_mugify_filter").get(), "*.mugify")
             );
             var file = fileChooser.showOpenDialog(getScene().getWindow());
-            try {
-                MugIO.loadFromJson(file.getAbsolutePath(), mugGrid.getMugTuple());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            if (file != null) {
+                try {
+                    MugIO.loadFromJson(file.getAbsolutePath(), mugGrid.getMugTuple());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
         return fileOpenItem;
     }
 
     private Menu buildViewMenu() {
-        var menu = new Menu("View");
+        var menu = new Menu();
+        menu.textProperty().bind(val("menu_view"));
 
-        var viewportMenu = new Menu("Views");
+        var viewportMenu = new Menu();
+        viewportMenu.textProperty().bind(val("menu_view_views"));
 
         ToggleGroup viewportGroup = new ToggleGroup();
         for (MugGrid.Viewport value : MugGrid.Viewport.values()) {
-            RadioMenuItem item = new RadioMenuItem(value.name());
+            RadioMenuItem item = new RadioMenuItem();
+            item.textProperty().bind(val(value.getId()));
             item.setToggleGroup(viewportGroup);
             item.setSelected(mugGrid.getViewport() == value);
             item.setOnAction(_ -> mugGrid.setViewport(value));
@@ -94,25 +127,26 @@ public class MugifyMenuBar extends MenuBar {
 
         var themeGroup = new ToggleGroup();
 
-        var uiThemeMenu = new Menu("UI theme");
+        var uiThemeMenu = new Menu();
+        uiThemeMenu.textProperty().bind(val("menu_view_ui_theme"));
 
-
-
-        var darkThemeItem = new RadioMenuItem("Dark");
-        var lightThemeItem = new RadioMenuItem("Light");
-        var syncThemeItem = new RadioMenuItem("Sync with OS");
+        var darkThemeItem = new RadioMenuItem();
+        darkThemeItem.textProperty().bind(val("theme_dark"));
+        var lightThemeItem = new RadioMenuItem();
+        lightThemeItem.textProperty().bind(val("theme_light"));
+        var syncThemeItem = new RadioMenuItem();
+        syncThemeItem.textProperty().bind(val("theme_sync"));
 
         sceneProperty().addListener((_, _, _) -> {
             getScene().windowProperty().addListener((_, _, win) -> {
-                var window = (MainWindow)win;
+                var window = (MainWindow) win;
                 darkThemeItem.setSelected(Style.DARK == window.getTransitTheme().getStyle());
                 darkThemeItem.setOnAction(_ -> window.getTransitTheme().setStyle(Style.DARK));
 
-                darkThemeItem.setSelected(Style.LIGHT == window.getTransitTheme().getStyle());
+                lightThemeItem.setSelected(Style.LIGHT == window.getTransitTheme().getStyle());
                 lightThemeItem.setOnAction(_ -> window.getTransitTheme().setStyle(Style.LIGHT));
             });
         });
-
 
         darkThemeItem.setToggleGroup(themeGroup);
         lightThemeItem.setToggleGroup(themeGroup);
@@ -125,10 +159,13 @@ public class MugifyMenuBar extends MenuBar {
     }
 
     private Menu buildHelpMenu() {
-        var menu = new Menu("Help");
+        var menu = new Menu();
+        menu.textProperty().bind(val("menu_help"));
 
-        var guideItem = new MenuItem("User Guide");
-        var aboutItem = new MenuItem("About");
+        var guideItem = new MenuItem();
+        guideItem.textProperty().bind(val("menu_help_guide"));
+        var aboutItem = new MenuItem();
+        aboutItem.textProperty().bind(val("menu_help_about"));
 
         menu.getItems().add(guideItem);
         menu.getItems().add(aboutItem);

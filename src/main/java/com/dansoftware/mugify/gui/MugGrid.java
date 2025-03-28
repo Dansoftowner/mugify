@@ -19,11 +19,21 @@ import java.util.Map;
 public class MugGrid extends GridPane {
 
     public enum Viewport {
-        SIDE_SCENE,
-        TOP_SCENE,
-        BOTTOM_SCENE,
-        SCENE_3D,
-        ALL_SCENES,
+        SIDE_SCENE("viewport_side"),
+        TOP_SCENE("viewport_top"),
+        BOTTOM_SCENE("viewport_bottom"),
+        SCENE_3D("viewport_3d"),
+        ALL_SCENES("viewport_all");
+
+        private final String id;
+
+        Viewport(String id) {
+            this.id = id;
+        }
+
+        public String getId() {
+            return this.id;
+        }
     }
 
     private static final Viewport DEFAULT_VIEWPORT = Viewport.ALL_SCENES;
