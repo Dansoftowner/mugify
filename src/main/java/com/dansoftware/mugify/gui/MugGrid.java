@@ -100,7 +100,7 @@ public class MugGrid extends GridPane {
         // mugs[0] is side-view by default
         setMugRotation(mugs.get(2), 272.5, 0.5); // bottom-view
         setMugRotation(mugs.get(1), 90.5, 1.5); // top-view
-        // mugs[3] is in a rotatable scene
+        setMugRotation(mugs.get(3), 37.5, 20.5); // 3D View default position
     }
 
     private SubScene createMugSubScene(Mug mug, boolean rotatable) {
