@@ -1,7 +1,7 @@
 module com.dansoftware.mugify {
     requires javafx.fxml;
     requires com.google.gson;
-    requires org.jfxtras.styles.jmetro;
+    requires com.pixelduke.transit;
 
     exports com.dansoftware.mugify;
 

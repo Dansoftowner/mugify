@@ -28,6 +28,10 @@ tasks.withType(JavaCompile) {
 application {
     mainModule = 'com.dansoftware.mugify'
     mainClass = 'com.dansoftware.mugify.Main'
+    applicationDefaultJvmArgs = [
+            '--add-opens', 'javafx.graphics/javafx.stage=com.pixelduke.fxthemes',
+            '--add-opens', 'javafx.graphics/com.sun.javafx.tk.quantum=com.pixelduke.fxthemes'
+    ]
 }
 
 javafx {
@@ -37,7 +41,7 @@ javafx {
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.12.1'
-    implementation 'org.jfxtras:jmetro:11.6.16'
+    implementation 'com.pixelduke:transit:2.0.0'
     implementation 'com.github.Dansoftowner:jSystemThemeDetector:3.6'
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")

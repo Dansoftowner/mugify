@@ -2,10 +2,9 @@ package com.dansoftware.mugify.gui;
 
 import com.dansoftware.mugify.io.MugIO;
 import com.dansoftware.mugify.mug.MugRandomizer;
+import com.pixelduke.transit.Style;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
-import jfxtras.styles.jmetro.JMetro;
-import jfxtras.styles.jmetro.Style;
 
 import java.io.IOException;
 
@@ -106,11 +105,11 @@ public class MugifyMenuBar extends MenuBar {
         sceneProperty().addListener((_, _, _) -> {
             getScene().windowProperty().addListener((_, _, win) -> {
                 var window = (MainWindow)win;
-                darkThemeItem.setSelected(Style.DARK == window.getjMetro().getStyle());
-                darkThemeItem.setOnAction(_ -> window.getjMetro().setStyle(Style.DARK));
+                darkThemeItem.setSelected(Style.DARK == window.getTransitTheme().getStyle());
+                darkThemeItem.setOnAction(_ -> window.getTransitTheme().setStyle(Style.DARK));
 
-                darkThemeItem.setSelected(Style.LIGHT == window.getjMetro().getStyle());
-                lightThemeItem.setOnAction(_ -> window.getjMetro().setStyle(Style.LIGHT));
+                darkThemeItem.setSelected(Style.LIGHT == window.getTransitTheme().getStyle());
+                lightThemeItem.setOnAction(_ -> window.getTransitTheme().setStyle(Style.LIGHT));
             });
         });
 

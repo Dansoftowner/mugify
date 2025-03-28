@@ -2,6 +2,7 @@ package com.dansoftware.mugify.gui;
 
 import com.dansoftware.mugify.mug.Mug;
 import com.dansoftware.mugify.mug.MugTuple;
+import com.pixelduke.transit.TransitStyleClass;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.*;
@@ -45,6 +46,7 @@ public class MugGrid extends GridPane {
         this.viewport = new SimpleObjectProperty<>();
         this.subScenes = new LinkedList<>();
         this.init();
+        this.getStyleClass().add(TransitStyleClass.BACKGROUND);
     }
 
     private void init() {

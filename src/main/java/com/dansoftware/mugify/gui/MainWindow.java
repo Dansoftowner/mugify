@@ -1,30 +1,33 @@
 package com.dansoftware.mugify.gui;
 
+import com.pixelduke.transit.Style;
+import com.pixelduke.transit.TransitTheme;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import jfxtras.styles.jmetro.JMetro;
-import jfxtras.styles.jmetro.Style;
 
 public class MainWindow extends Stage {
-    private final JMetro jMetro;
+    private static final String STYLESHEET = MainWindow.class.getResource("/com/dansoftware/mugify/css/styles.css").toExternalForm();
+
+    private final TransitTheme transitTheme;
 
     public MainWindow() {
-        this.jMetro = new JMetro(Style.DARK);
+        this.transitTheme = new TransitTheme(Style.DARK);
 
         var mainView = new MainView();
 
         var scene = new Scene(mainView);
-        scene.getStylesheets().add(MainWindow.class.getResource("/com/dansoftware/mugify/css/styles.css").toExternalForm());
+        scene.getStylesheets().add(STYLESHEET);
         scene.setFill(Color.TRANSPARENT);
 
         setTitle("Mugify");
         setScene(scene);
 
-        this.jMetro.setScene(scene);
+        setOnShown(_ -> this.transitTheme.setScene(scene));
+
         setSize();
         centerOnScreen();
         initErrorHandling();
@@ -53,7 +56,7 @@ public class MainWindow extends Stage {
         });
     }
 
-    public JMetro getjMetro() {
-        return jMetro;
+    public TransitTheme getTransitTheme() {
+        return transitTheme;
     }
 }
