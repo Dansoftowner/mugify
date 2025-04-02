@@ -64,7 +64,7 @@ public class MugGrid extends GridPane {
         initGridConstraints();
         initViewportBehaviours();
         generateScenes();
-        rotateMugs();
+        fitMugs();
         this.viewport.set(DEFAULT_VIEWPORT);
     }
 
@@ -116,11 +116,15 @@ public class MugGrid extends GridPane {
         }
     }
 
-    private void rotateMugs() {
+    private void fitMugs() {
         // mugs[0] is side-view by default
         setMugRotation(mugs.get(Viewport.BOTTOM_SCENE), 272.5, 0.5); // bottom-view
         setMugRotation(mugs.get(Viewport.TOP_SCENE), 90.5, 1.5); // top-view
         setMugRotation(mugs.get(Viewport.SCENE_3D), 37.5, 20.5); // 3D View default position
+
+        // we don't want the height to have effect on the appearance of the top and bottom scene
+        mugs.get(Viewport.TOP_SCENE).heightProperty().unbindBidirectional(this.mugTuple.heightProperty());
+        mugs.get(Viewport.BOTTOM_SCENE).heightProperty().unbindBidirectional(this.mugTuple.heightProperty());
     }
 
     private SubScene createMugSubScene(Mug mug, boolean rotatable) {
