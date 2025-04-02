@@ -11,7 +11,7 @@ import java.util.List;
 
 public class MugTuple implements MugLike {
 
-    private final List<Mug> mugs;
+    private final List<MugLike> mugs;
 
     private final DoubleProperty borderThickness;
     private final DoubleProperty radius;
@@ -23,7 +23,7 @@ public class MugTuple implements MugLike {
     private final ObjectProperty<Color> handleColor;
     private final DoubleProperty handleWidth;
 
-    public MugTuple(Collection<Mug> mugs) {
+    public MugTuple(Collection<? extends MugLike> mugs) {
         this.borderThickness = new SimpleDoubleProperty(Mug.DEFAULT_BORDER_THICKNESS);
         this.radius = new SimpleDoubleProperty(Mug.DEFAULT_RADIUS);
         this.height = new SimpleDoubleProperty(Mug.DEFAULT_HEIGHT);
@@ -37,8 +37,8 @@ public class MugTuple implements MugLike {
         this.init(this.mugs);
     }
 
-    private void init(List<Mug> mugs) {
-        for (Mug mug : mugs) {
+    private void init(List<MugLike> mugs) {
+        for (MugLike mug : mugs) {
             mug.borderThicknessProperty().bind(this.borderThickness);
             mug.radiusProperty().bind(this.radius);
             mug.heightProperty().bind(this.height);
@@ -161,7 +161,7 @@ public class MugTuple implements MugLike {
         this.handleWidth.set(handleWidth);
     }
 
-    public List<Mug> getMugs() {
+    public List<MugLike> getMugs() {
         return mugs;
     }
 }
