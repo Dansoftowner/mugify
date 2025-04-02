@@ -1,5 +1,6 @@
 package com.dansoftware.mugify.mug;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -94,7 +95,17 @@ public class Mug extends Group implements MugLike {
         innerBody.heightProperty().bind(this.height.add(0.5));
 
         PhongMaterial innerMaterial = new PhongMaterial();
-        innerMaterial.diffuseColorProperty().bind(this.innerColor);
+
+        // if the outer and inner colors are the same we make sure that there is still a color-difference
+        var innerColor = Bindings.createObjectBinding(() -> {
+            if (this.innerColor.get().equals(this.outerColor.get())) {
+                Color color = this.innerColor.get();
+                return color.deriveColor(10, 1, 1, 1);
+            }
+            return this.innerColor.get();
+        }, this.innerColor, this.outerColor);
+
+        innerMaterial.diffuseColorProperty().bind(innerColor);
         innerBody.setMaterial(innerMaterial);
         return innerBody;
     }
