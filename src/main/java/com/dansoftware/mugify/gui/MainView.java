@@ -1,6 +1,12 @@
 package com.dansoftware.mugify.gui;
 
+import com.pixelduke.transit.TransitStyleClass;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.BorderPane;
+
+import static com.dansoftware.mugify.i18n.I18NUtils.val;
 
 public class MainView extends BorderPane {
 
@@ -8,14 +14,20 @@ public class MainView extends BorderPane {
     private final MugifyMenuBar menuBar;
     private final MugEditorTabPane mugEditorTabPane;
 
+    private final BooleanProperty editorVisible = new SimpleBooleanProperty(true);
+
     public MainView() {
         mugGrid = new MugGrid();
         menuBar = new MugifyMenuBar(mugGrid);
         mugEditorTabPane = new MugEditorTabPane(mugGrid.getMugTuple());
 
+        mugEditorTabPane.visibleProperty().bind(editorVisible);
+        mugEditorTabPane.managedProperty().bind(editorVisible);
+
         setTop(menuBar);
         setCenter(mugGrid);
         setRight(mugEditorTabPane);
+        setBottom(new BottomToolbar());
 
         // for proper responsiveness
         mugGrid.maxWidthProperty().bind(this.widthProperty());
@@ -29,5 +41,23 @@ public class MainView extends BorderPane {
 
     public MugifyMenuBar getMenuBar() {
         return menuBar;
+    }
+
+    private final class BottomToolbar extends BorderPane {
+        private static final String STYLE_CLASS = "bottom-toolbar";
+
+        BottomToolbar() {
+            this.setRight(buildEditorToggle());
+            getStyleClass().add(TransitStyleClass.BACKGROUND);
+            getStyleClass().add(STYLE_CLASS);
+        }
+
+        private ToggleButton buildEditorToggle() {
+            var toggle = new ToggleButton();
+            toggle.setSelected(true);
+            toggle.textProperty().bind(val("editor"));
+            toggle.selectedProperty().bindBidirectional(MainView.this.editorVisible);
+            return toggle;
+        }
     }
 }

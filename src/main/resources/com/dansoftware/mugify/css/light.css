@@ -9,3 +9,7 @@
 .title-label {
     -fx-background-color: rgba(0, 0, 0, 0.1);
 }
+
+.bottom-toolbar {
+   -fx-background-color: rgba(0, 0, 0, 0.2);
+}
