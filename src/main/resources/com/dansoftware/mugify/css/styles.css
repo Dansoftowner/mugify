@@ -13,4 +13,5 @@
 .title-label {
     -fx-font-weight: bold;
     -fx-font-size: 16px;
+    -fx-padding: 5;
 }

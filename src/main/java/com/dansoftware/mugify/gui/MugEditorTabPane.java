@@ -10,11 +10,15 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 import static com.dansoftware.mugify.i18n.I18NUtils.val;
 
 public class MugEditorTabPane extends TabPane {
+    private static final String CONTENT_STYLE_CLASS = "mug-editor-tab-pane-content";
+
     private final MugLike mug;
 
     public MugEditorTabPane(MugLike mug) {
@@ -38,27 +42,28 @@ public class MugEditorTabPane extends TabPane {
         tab.textProperty().bind(val("tab_body"));
         GridPane grid = createGridPane();
 
-        Label titleLabel = createTitleLabel("tab_body");
-        grid.add(titleLabel, 0, 0, 2, 1);
-
         Label heightLabel = createLabel("mug_height");
         Slider heightSlider = createSlider(MugBoundaries.MIN_HEIGHT, MugBoundaries.MAX_HEIGHT, mug.heightProperty());
         heightSlider.setOrientation(Orientation.VERTICAL);
         heightSlider.setShowTickLabels(true);
         heightSlider.setShowTickMarks(true);
-        addToGrid(grid, heightLabel, heightSlider, 1);
+        addToGrid(grid, heightLabel, heightSlider, 0);
 
         Label radiusLabel = createLabel("mug_radius");
         Slider radiusSlider = createSlider(MugBoundaries.MIN_RADIUS, MugBoundaries.MAX_RADIUS, mug.radiusProperty());
         radiusSlider.setShowTickLabels(true);
         radiusSlider.setShowTickMarks(true);
-        addToGrid(grid, radiusLabel, radiusSlider, 2);
+        addToGrid(grid, radiusLabel, radiusSlider, 1);
 
         Label outerColorLabel = createLabel("mug_outer_color");
         ColorPicker outerColorPicker = createColorPicker(mug.outerColorProperty());
-        addToGrid(grid, outerColorLabel, outerColorPicker, 3);
+        addToGrid(grid, outerColorLabel, outerColorPicker, 2);
 
-        tab.setContent(createScrollPane(grid));
+        ScrollPane scrollPane = createScrollPane(grid);
+        VBox content = new VBox();
+        Label titleLabel = createTitleLabel("tab_body", content);
+        content.getChildren().addAll(titleLabel, scrollPane);
+        tab.setContent(content);
         return tab;
     }
 
@@ -68,20 +73,21 @@ public class MugEditorTabPane extends TabPane {
         tab.textProperty().bind(val("tab_interior"));
         GridPane grid = createGridPane();
 
-        Label titleLabel = createTitleLabel("tab_interior");
-        grid.add(titleLabel, 0, 0, 2, 1);
-
         Label borderThicknessLabel = createLabel("mug_border_thickness");
         Slider borderThicknessSlider = createSlider(MugBoundaries.MIN_BORDER_THICKNESS, MugBoundaries.MAX_BORDER_THICKNESS, mug.borderThicknessProperty());
         borderThicknessSlider.setShowTickLabels(true);
         borderThicknessSlider.setShowTickMarks(true);
-        addToGrid(grid, borderThicknessLabel, borderThicknessSlider, 1);
+        addToGrid(grid, borderThicknessLabel, borderThicknessSlider, 0);
 
         Label innerColorLabel = createLabel("mug_inner_color");
         ColorPicker innerColorPicker = createColorPicker(mug.innerColorProperty());
-        addToGrid(grid, innerColorLabel, innerColorPicker, 2);
+        addToGrid(grid, innerColorLabel, innerColorPicker, 1);
 
-        tab.setContent(createScrollPane(grid));
+        ScrollPane scrollPane = createScrollPane(grid);
+        VBox content = new VBox();
+        Label titleLabel = createTitleLabel("tab_interior", content);
+        content.getChildren().addAll(titleLabel, scrollPane);
+        tab.setContent(content);
         return tab;
     }
 
@@ -91,26 +97,27 @@ public class MugEditorTabPane extends TabPane {
         tab.textProperty().bind(val("tab_handle"));
         GridPane grid = createGridPane();
 
-        Label titleLabel = createTitleLabel("tab_handle");
-        grid.add(titleLabel, 0, 0, 2, 1);
-
         Label handleRadiusLabel = createLabel("mug_handle_radius");
         Slider handleRadiusSlider = createSlider(MugBoundaries.MIN_HANDLE_RADIUS, MugBoundaries.MAX_HANDLE_RADIUS, mug.handleRadiusProperty());
         handleRadiusSlider.setShowTickLabels(true);
         handleRadiusSlider.setShowTickMarks(true);
-        addToGrid(grid, handleRadiusLabel, handleRadiusSlider, 1);
+        addToGrid(grid, handleRadiusLabel, handleRadiusSlider, 0);
 
         Label handleWidthLabel = createLabel("mug_handle_width");
         Slider handleWidthSlider = createSlider(MugBoundaries.MIN_HANDLE_WIDTH, MugBoundaries.MAX_HANDLE_WIDTH, mug.handleWidthProperty());
         handleWidthSlider.setShowTickLabels(true);
         handleWidthSlider.setShowTickMarks(true);
-        addToGrid(grid, handleWidthLabel, handleWidthSlider, 2);
+        addToGrid(grid, handleWidthLabel, handleWidthSlider, 1);
 
         Label handleColorLabel = createLabel("mug_handle_color");
         ColorPicker handleColorPicker = createColorPicker(mug.handleColorProperty());
-        addToGrid(grid, handleColorLabel, handleColorPicker, 3);
+        addToGrid(grid, handleColorLabel, handleColorPicker, 2);
 
-        tab.setContent(createScrollPane(grid));
+        ScrollPane scrollPane = createScrollPane(grid);
+        VBox content = new VBox();
+        Label titleLabel = createTitleLabel("tab_handle", content);
+        content.getChildren().addAll(titleLabel, scrollPane);
+        tab.setContent(content);
         return tab;
     }
 
@@ -120,14 +127,15 @@ public class MugEditorTabPane extends TabPane {
         tab.textProperty().bind(val("tab_bottom"));
         GridPane grid = createGridPane();
 
-        Label titleLabel = createTitleLabel("tab_bottom");
-        grid.add(titleLabel, 0, 0, 2, 1);
-
         Label bottomColorLabel = createLabel("mug_bottom_color");
         ColorPicker bottomColorPicker = createColorPicker(mug.bottomColorProperty());
-        addToGrid(grid, bottomColorLabel, bottomColorPicker, 1);
+        addToGrid(grid, bottomColorLabel, bottomColorPicker, 0);
 
-        tab.setContent(createScrollPane(grid));
+        ScrollPane scrollPane = createScrollPane(grid);
+        VBox content = new VBox();
+        Label titleLabel = createTitleLabel("tab_bottom", content);
+        content.getChildren().addAll(titleLabel, scrollPane);
+        tab.setContent(content);
         return tab;
     }
 
@@ -136,6 +144,7 @@ public class MugEditorTabPane extends TabPane {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(10));
+        grid.getStyleClass().add(CONTENT_STYLE_CLASS);
         return grid;
     }
 
@@ -145,10 +154,11 @@ public class MugEditorTabPane extends TabPane {
         return label;
     }
 
-    private Label createTitleLabel(String key) {
+    private Label createTitleLabel(String key, VBox vbox) {
         Label label = new Label();
         label.textProperty().bind(val(key));
         label.getStyleClass().add("title-label");
+        label.prefWidthProperty().bind(vbox.widthProperty());
         return label;
     }
 
@@ -174,6 +184,8 @@ public class MugEditorTabPane extends TabPane {
     private ScrollPane createScrollPane(GridPane grid) {
         ScrollPane scrollPane = new ScrollPane(grid);
         scrollPane.setFitToWidth(true);
+        grid.prefHeightProperty().bind(scrollPane.heightProperty()); // TODO: basically the scrollbar never appears
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
         return scrollPane;
     }
 }

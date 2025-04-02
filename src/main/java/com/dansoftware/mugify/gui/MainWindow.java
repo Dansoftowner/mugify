@@ -14,6 +14,10 @@ import java.util.function.Consumer;
 
 public class MainWindow extends Stage {
     private static final String STYLESHEET = MainWindow.class.getResource("/com/dansoftware/mugify/css/styles.css").toExternalForm();
+    private static final String DARK_STYLESHEET = MainWindow.class.getResource("/com/dansoftware/mugify/css/dark.css").toExternalForm();
+    private static final String LIGHT_STYLESHEET = MainWindow.class.getResource("/com/dansoftware/mugify/css/light.css").toExternalForm();
+
+    private static final Style DEFAULT_UI_STYLE = Style.DARK;
 
     private final TransitTheme transitTheme;
 
@@ -21,8 +25,8 @@ public class MainWindow extends Stage {
     private final Consumer<Boolean> osThemeListener;
 
     public MainWindow() {
-        this.transitTheme = new TransitTheme(Style.DARK);
-        this.osThemeListener = isDark -> transitTheme.setStyle(isDark ? Style.DARK : Style.LIGHT);
+        this.transitTheme = new TransitTheme(DEFAULT_UI_STYLE);
+        this.osThemeListener = isDark -> applyUIStyle(isDark ? Style.DARK : Style.LIGHT);
 
         var mainView = new MainView();
 
@@ -33,7 +37,10 @@ public class MainWindow extends Stage {
         setTitle("Mugify");
         setScene(scene);
 
-        setOnShown(_ -> this.transitTheme.setScene(scene));
+        setOnShown(_ -> {
+            this.transitTheme.setScene(scene);
+            applyUIStyle(DEFAULT_UI_STYLE); // to make the custom css applied
+        });
 
         setSize();
         centerOnScreen();
@@ -84,7 +91,26 @@ public class MainWindow extends Stage {
      */
     public void setTransitStyle(Style style) {
         setSyncTheme(false);
+        applyUIStyle(style);
+    }
+
+    /**
+     * Applies the transit theme's style and the custom css assets as well.
+     *
+     * @param style
+     */
+    private void applyUIStyle(Style style) {
         transitTheme.setStyle(style);
+        switch (style) {
+            case LIGHT -> {
+                getScene().getStylesheets().remove(DARK_STYLESHEET);
+                getScene().getStylesheets().add(LIGHT_STYLESHEET);
+            }
+            case DARK -> {
+                getScene().getStylesheets().remove(LIGHT_STYLESHEET);
+                getScene().getStylesheets().add(DARK_STYLESHEET);
+            }
+        }
     }
 
     public Style getTransitStyle() {
