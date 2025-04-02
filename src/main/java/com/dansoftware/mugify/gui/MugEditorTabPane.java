@@ -8,9 +8,11 @@ import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
@@ -47,7 +49,7 @@ public class MugEditorTabPane extends TabPane {
         heightSlider.setOrientation(Orientation.VERTICAL);
         heightSlider.setShowTickLabels(true);
         heightSlider.setShowTickMarks(true);
-        addToGrid(grid, heightLabel, heightSlider, 0);
+        addToGrid(grid, heightLabel, new StackPane(heightSlider), 0);
 
         Label radiusLabel = createLabel("mug_radius");
         Slider radiusSlider = createSlider(MugBoundaries.MIN_RADIUS, MugBoundaries.MAX_RADIUS, mug.radiusProperty());
@@ -179,7 +181,7 @@ public class MugEditorTabPane extends TabPane {
         return colorPicker;
     }
 
-    private void addToGrid(GridPane grid, Label label, Control control, int row) {
+    private void addToGrid(GridPane grid, Label label, Node control, int row) {
         grid.add(label, 0, row);
         grid.add(control, 1, row);
     }
