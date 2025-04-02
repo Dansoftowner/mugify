@@ -5,6 +5,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
@@ -40,8 +41,7 @@ public class Mug extends Group implements MugLike {
     private final DoubleProperty handleRadius;
     private final ObjectProperty<Color> handleColor;
     private final DoubleProperty handleWidth;
-
-    private final DoubleProperty realHandleRadius;
+    private final DoubleProperty maxHandleRadius;
 
     public Mug() {
         borderThickness = new SimpleDoubleProperty(DEFAULT_BORDER_THICKNESS);
@@ -53,7 +53,7 @@ public class Mug extends Group implements MugLike {
         handleRadius = new SimpleDoubleProperty(DEFAULT_HANDLE_RADIUS);
         handleColor = new SimpleObjectProperty<>(DEFAULT_HANDLE_COLOR);
         handleWidth = new SimpleDoubleProperty(DEFAULT_HANDLE_WIDTH);
-        realHandleRadius = new SimpleDoubleProperty(DEFAULT_HANDLE_RADIUS);
+        maxHandleRadius = new SimpleDoubleProperty(MugBoundaries.MAX_HANDLE_RADIUS);
         init();
     }
 
@@ -71,10 +71,23 @@ public class Mug extends Group implements MugLike {
 
             double handleRadius = (double) newValue;
             while (MugBoundaries.HEIGHT_HANDLE_RADIUS_RATIO > this.height.get() / handleRadius) {
-                handleRadius -= 1;
+                handleRadius -= 0.1;
             }
 
-            this.realHandleRadius.set(handleRadius);
+            this.handleRadius.set(handleRadius);
+            this.maxHandleRadius.set(handleRadius);
+            //System.out.println(newValue + ", Setting back: " + handleRadius);
+        });
+
+        this.height.addListener((_, _, newValue) -> {
+            double height = (double) newValue;
+            double handleRadius = this.handleRadius.get();
+            while (MugBoundaries.HEIGHT_HANDLE_RADIUS_RATIO > height / handleRadius) {
+                 handleRadius -= 0.1;
+            }
+
+            this.handleRadius.set(handleRadius);
+            this.maxHandleRadius.set(handleRadius);
         });
     }
 
@@ -141,8 +154,8 @@ public class Mug extends Group implements MugLike {
 
             segment.setMaterial(handleMaterial);
 
-            segment.translateXProperty().bind(this.realHandleRadius.multiply(Math.cos(angle)).add(this.radius));
-            segment.translateYProperty().bind(this.realHandleRadius.multiply(Math.sin(angle)));
+            segment.translateXProperty().bind(this.handleRadius.multiply(Math.cos(angle)).add(this.radius));
+            segment.translateYProperty().bind(this.handleRadius.multiply(Math.sin(angle)));
 
             segment.setRotationAxis(Rotate.Z_AXIS);
             segment.setRotate(Math.toDegrees(angle) + 90);
@@ -223,6 +236,11 @@ public class Mug extends Group implements MugLike {
 
     public DoubleProperty handleRadiusProperty() {
         return handleRadius;
+    }
+
+    @Override
+    public ObservableValue<? extends Number> maxHandleRadiusProperty() {
+        return maxHandleRadius;
     }
 
     public void setBorderThickness(double borderThickness) {

@@ -4,6 +4,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.paint.Color;
 
 import java.util.Collection;
@@ -39,15 +40,15 @@ public class MugTuple implements MugLike {
 
     private void init(List<MugLike> mugs) {
         for (MugLike mug : mugs) {
-            mug.borderThicknessProperty().bind(this.borderThickness);
-            mug.radiusProperty().bind(this.radius);
-            mug.heightProperty().bind(this.height);
-            mug.outerColorProperty().bind(this.outerColor);
-            mug.innerColorProperty().bind(this.innerColor);
-            mug.bottomColorProperty().bind(this.bottomColor);
-            mug.handleRadiusProperty().bind(this.handleRadius);
-            mug.handleColorProperty().bind(this.handleColor);
-            mug.handleWidthProperty().bind(this.handleWidth);
+            mug.borderThicknessProperty().bindBidirectional(this.borderThickness);
+            mug.radiusProperty().bindBidirectional(this.radius);
+            mug.heightProperty().bindBidirectional(this.height);
+            mug.outerColorProperty().bindBidirectional(this.outerColor);
+            mug.innerColorProperty().bindBidirectional(this.innerColor);
+            mug.bottomColorProperty().bindBidirectional(this.bottomColor);
+            mug.handleRadiusProperty().bindBidirectional(this.handleRadius);
+            mug.handleColorProperty().bindBidirectional(this.handleColor);
+            mug.handleWidthProperty().bindBidirectional(this.handleWidth);
         }
     }
 
@@ -129,6 +130,11 @@ public class MugTuple implements MugLike {
 
     public DoubleProperty handleRadiusProperty() {
         return handleRadius;
+    }
+
+    @Override
+    public ObservableValue<? extends Number> maxHandleRadiusProperty() {
+        return this.mugs.getFirst().maxHandleRadiusProperty();
     }
 
     public void setHandleRadius(double handleRadius) {

@@ -99,6 +99,9 @@ public class MugEditorTabPane extends TabPane {
 
         Label handleRadiusLabel = createLabel("mug_handle_radius");
         Slider handleRadiusSlider = createSlider(MugBoundaries.MIN_HANDLE_RADIUS, MugBoundaries.MAX_HANDLE_RADIUS, mug.handleRadiusProperty());
+        mug.maxHandleRadiusProperty().addListener((_, _, newValue) -> {
+            handleRadiusSlider.setValue((double) newValue);
+        });
         handleRadiusSlider.setShowTickLabels(true);
         handleRadiusSlider.setShowTickMarks(true);
         addToGrid(grid, handleRadiusLabel, handleRadiusSlider, 0);
