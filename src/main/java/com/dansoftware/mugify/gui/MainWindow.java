@@ -50,8 +50,8 @@ public class MainWindow extends Stage {
     private void setSize() {
         var screen = Screen.getPrimary();
 
-        double width = screen.getBounds().getWidth() / 2;
-        double height = screen.getBounds().getHeight() / 2;
+        double width = (3.0 / 4) * screen.getBounds().getWidth();
+        double height = (3.0 / 4) * screen.getBounds().getHeight();
 
         setWidth(width);
         setHeight(height);
