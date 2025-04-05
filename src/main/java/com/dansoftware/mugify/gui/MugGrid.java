@@ -156,6 +156,7 @@ public class MugGrid extends GridPane {
             subScene.setOnMousePressed(event -> {
                 startPos[0] = event.getSceneX();
                 startPos[1] = event.getSceneY();
+                subScene.setCursor(Cursor.CLOSED_HAND);
             });
 
             subScene.setOnMouseDragged(event -> {
@@ -170,6 +171,9 @@ public class MugGrid extends GridPane {
                 startPos[0] = event.getSceneX();
                 startPos[1] = event.getSceneY();
             });
+
+            subScene.setOnMouseReleased(_ -> subScene.setCursor(Cursor.OPEN_HAND));
+            subScene.setCursor(Cursor.OPEN_HAND);
         }
 
         subScene.setFill(Color.TRANSPARENT);
