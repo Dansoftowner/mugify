@@ -1,5 +1,6 @@
 package com.dansoftware.mugify.gui;
 
+import com.dansoftware.mugify.mug.MugHistory;
 import com.jthemedetecor.OsThemeDetector;
 import com.pixelduke.transit.Style;
 import com.pixelduke.transit.TransitTheme;
@@ -20,15 +21,17 @@ public class MainWindow extends Stage {
     private static final Style DEFAULT_UI_STYLE = Style.DARK;
 
     private final TransitTheme transitTheme;
+    private final MugHistory mugHistory;
 
     private boolean syncTheme;
     private final Consumer<Boolean> osThemeListener;
 
-    public MainWindow() {
+    public MainWindow(MugHistory mugHistory) {
         this.transitTheme = new TransitTheme(DEFAULT_UI_STYLE);
         this.osThemeListener = isDark -> applyUIStyle(isDark ? Style.DARK : Style.LIGHT);
+        this.mugHistory = mugHistory;
 
-        var mainView = new MainView();
+        var mainView = new MainView(mugHistory);
 
         var scene = new Scene(mainView);
         scene.getStylesheets().add(STYLESHEET);
@@ -115,5 +118,9 @@ public class MainWindow extends Stage {
 
     public Style getTransitStyle() {
         return transitTheme.getStyle();
+    }
+
+    public MugHistory getMugHistory() {
+        return mugHistory;
     }
 }

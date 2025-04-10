@@ -1,6 +1,7 @@
 package com.dansoftware.mugify;
 
 import com.dansoftware.mugify.gui.MainWindow;
+import com.dansoftware.mugify.mug.MugHistory;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -10,7 +11,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        var window = new MainWindow();
+        var window = new MainWindow(new MugHistory());
         window.show();
     }
 

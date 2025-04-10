@@ -1,6 +1,7 @@
 package com.dansoftware.mugify.gui;
 
 import com.dansoftware.mugify.io.MugIO;
+import com.dansoftware.mugify.mug.MugHistory;
 import com.dansoftware.mugify.mug.MugRandomizer;
 import com.pixelduke.transit.Style;
 import javafx.scene.control.*;
@@ -8,6 +9,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -17,10 +19,14 @@ import static com.dansoftware.mugify.i18n.I18NUtils.*;
 public class MugifyMenuBar extends MenuBar {
     private final MugGrid mugGrid;
     private final MugRandomizer randomizer;
+    private final MugHistory mugHistory;
+    private Menu recentMenu;
 
-    public MugifyMenuBar(MugGrid mugGrid) {
+    public MugifyMenuBar(MugGrid mugGrid, MugHistory mugHistory) {
         this.mugGrid = mugGrid;
         this.randomizer = new MugRandomizer();
+        this.mugHistory = mugHistory;
+        this.mugHistory.addCallback(this::updateRecentMenu);
         this.buildMenuStructure();
     }
 
@@ -53,6 +59,18 @@ public class MugifyMenuBar extends MenuBar {
         var menu = new Menu();
         menu.textProperty().bind(val("menu_file"));
 
+        var generateItem = new MenuItem();
+        generateItem.textProperty().bind(val("menu_file_generate"));
+        generateItem.setOnAction(_ -> {
+            Stage currentStage = (Stage) getScene().getWindow();
+            MugHistory.MugEntry currentEntry = mugHistory.getActiveEntryForStage(currentStage);
+            if (currentEntry != null)
+                mugHistory.removeActive(currentEntry);
+            randomizer.apply(mugGrid.getMugTuple());
+        });
+        generateItem.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
+        menu.getItems().add(generateItem);
+
         var fileOpenItem = fileOpenMenuItem();
         fileOpenItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
         menu.getItems().add(fileOpenItem);
@@ -61,22 +79,112 @@ public class MugifyMenuBar extends MenuBar {
         fileSaveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
         menu.getItems().add(fileSaveItem);
 
-        var generateItem = new MenuItem();
-        generateItem.textProperty().bind(val("menu_file_generate"));
-        generateItem.setOnAction(_ -> randomizer.apply(mugGrid.getMugTuple()));
-        generateItem.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
-        menu.getItems().add(generateItem);
+        var fileSaveAsItem = fileSaveAsMenuItem();
+        fileSaveAsItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN));
+        menu.getItems().add(fileSaveAsItem);
+
+        recentMenu = new Menu();
+        recentMenu.textProperty().bind(val("menu_file_recent"));
+        updateRecentMenu();
+        menu.getItems().add(recentMenu);
 
         var fileDeleteItem = fileDeleteMenuItem();
         menu.getItems().add(fileDeleteItem);
 
+        var newWindowItem = new MenuItem();
+        newWindowItem.textProperty().bind(val("menu_new_window"));
+        newWindowItem.setOnAction(_ -> new MainWindow(mugHistory).show());
+        menu.getItems().add(newWindowItem);
+
         return menu;
+    }
+
+    private void updateRecentMenu() {
+        recentMenu.getItems().clear();
+        for (MugHistory.MugEntry entry : mugHistory.listPairs()) {
+            MenuItem item = new MenuItem();
+            item.setText("%s (%s)".formatted(entry.getName(), entry.getFilePath()));
+            item.setOnAction(_ -> {
+                if (mugHistory.isActiveFile(entry.getFilePath())) {
+                    Stage stage = entry.getStage();
+                    if (stage != null) {
+                        stage.requestFocus();
+                    }
+                } else {
+                    try {
+                        MugIO.loadFromJson(entry.getFilePath(), mugGrid.getMugTuple());
+                        Stage currentStage = (Stage) getScene().getWindow();
+                        mugHistory.setStage(entry, currentStage);
+                        mugHistory.addActive(entry);
+                        updateRecentMenu();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+            recentMenu.getItems().add(item);
+        }
     }
 
     private MenuItem fileSaveMenuItem() {
         var fileSaveItem = new MenuItem();
         fileSaveItem.textProperty().bind(val("menu_file_save"));
         fileSaveItem.setOnAction(_ -> {
+            MugHistory.MugEntry currentEntry = mugHistory.getActiveEntryForStage((Stage) getScene().getWindow());
+            if (currentEntry != null) {
+                try {
+                    MugIO.saveToJson(currentEntry.getFilePath(), mugGrid.getMugTuple());
+                    mugHistory.updateEntryName(currentEntry, mugGrid.getMugTuple().getName());
+                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                    successAlert.setTitle(val("alert_save_success_title").get());
+                    successAlert.setHeaderText(val("alert_save_success_header").get());
+                    successAlert.setContentText(val("alert_save_success_content").get());
+                    successAlert.showAndWait();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle(val("filechooser_save_title").get());
+                fileChooser.getExtensionFilters().add(
+                        new FileChooser.ExtensionFilter(val("filechooser_mugify_filter").get(), "*.mugify")
+                );
+                fileChooser.setInitialFileName("%s.mugify".formatted(mugGrid.getMugTuple().getName()));
+                var outputFile = fileChooser.showSaveDialog(getScene().getWindow());
+                if (outputFile != null) {
+                    String filePath = outputFile.getAbsolutePath();
+                    if (mugHistory.isActiveFile(filePath)) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle(val("alert_save_active_title").get());
+                        alert.setHeaderText(val("alert_save_active_header").get());
+                        alert.setContentText(val("alert_save_active_content").get());
+                        alert.showAndWait();
+                    } else {
+                        try {
+                            MugIO.saveToJson(filePath, mugGrid.getMugTuple());
+                            MugHistory.MugEntry entry = mugHistory.findByFilePath(filePath);
+                            if (entry == null) {
+                                entry = new MugHistory.MugEntry(mugGrid.getMugTuple().getName(), filePath);
+                                mugHistory.addMug(entry);
+                            }
+                            Stage currentStage = (Stage) getScene().getWindow();
+                            mugHistory.setStage(entry, currentStage);
+                            mugHistory.addActive(entry);
+                            updateRecentMenu();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+        });
+        return fileSaveItem;
+    }
+
+    private MenuItem fileSaveAsMenuItem() {
+        var fileSaveAsItem = new MenuItem();
+        fileSaveAsItem.textProperty().bind(val("menu_file_save_as"));
+        fileSaveAsItem.setOnAction(_ -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle(val("filechooser_save_title").get());
             fileChooser.getExtensionFilters().add(
@@ -85,14 +193,32 @@ public class MugifyMenuBar extends MenuBar {
             fileChooser.setInitialFileName("%s.mugify".formatted(mugGrid.getMugTuple().getName()));
             var outputFile = fileChooser.showSaveDialog(getScene().getWindow());
             if (outputFile != null) {
-                try {
-                    MugIO.saveToJson(outputFile.getAbsolutePath(), mugGrid.getMugTuple());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                String filePath = outputFile.getAbsolutePath();
+                if (mugHistory.isActiveFile(filePath)) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle(val("alert_save_active_title").get());
+                    alert.setHeaderText(val("alert_save_active_header").get());
+                    alert.setContentText(val("alert_save_active_content").get());
+                    alert.showAndWait();
+                } else {
+                    try {
+                        MugIO.saveToJson(filePath, mugGrid.getMugTuple());
+                        MugHistory.MugEntry entry = mugHistory.findByFilePath(filePath);
+                        if (entry == null) {
+                            entry = new MugHistory.MugEntry(mugGrid.getMugTuple().getName(), filePath);
+                            mugHistory.addMug(entry);
+                        }
+                        Stage currentStage = (Stage) getScene().getWindow();
+                        mugHistory.setStage(entry, currentStage);
+                        mugHistory.addActive(entry);
+                        updateRecentMenu();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         });
-        return fileSaveItem;
+        return fileSaveAsItem;
     }
 
     private MenuItem fileOpenMenuItem() {
@@ -106,10 +232,27 @@ public class MugifyMenuBar extends MenuBar {
             );
             var file = fileChooser.showOpenDialog(getScene().getWindow());
             if (file != null) {
-                try {
-                    MugIO.loadFromJson(file.getAbsolutePath(), mugGrid.getMugTuple());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                String filePath = file.getAbsolutePath();
+                MugHistory.MugEntry entry = mugHistory.findByFilePath(filePath);
+                if (entry != null && mugHistory.isActiveFile(filePath)) {
+                    Stage stage = entry.getStage();
+                    if (stage != null) {
+                        stage.requestFocus();
+                    }
+                } else {
+                    try {
+                        MugIO.loadFromJson(filePath, mugGrid.getMugTuple());
+                        if (entry == null) {
+                            entry = new MugHistory.MugEntry(mugGrid.getMugTuple().getName(), filePath);
+                            mugHistory.addMug(entry);
+                        }
+                        Stage currentStage = (Stage) getScene().getWindow();
+                        mugHistory.setStage(entry, currentStage);
+                        mugHistory.addActive(entry);
+                        updateRecentMenu();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         });
@@ -128,32 +271,44 @@ public class MugifyMenuBar extends MenuBar {
             );
             var file = fileChooser.showOpenDialog(getScene().getWindow());
             if (file != null) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle(val("alert_delete_confirm_title").get());
-                alert.setHeaderText(val("alert_delete_confirm_header").get());
-                alert.setContentText(val("alert_delete_confirm_content").get());
-                alert.showAndWait().ifPresent(response -> {
-                    if (response == ButtonType.OK) {
-                        if (file.delete()) {
-                            Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-                            successAlert.setTitle(val("alert_delete_success_title").get());
-                            successAlert.setHeaderText(val("alert_delete_success_header").get());
-                            successAlert.setContentText(val("alert_delete_success_content").get());
-                            successAlert.showAndWait();
-                        } else {
-                            Alert failureAlert = new Alert(Alert.AlertType.ERROR);
-                            failureAlert.setTitle(val("alert_delete_failure_title").get());
-                            failureAlert.setHeaderText(val("alert_delete_failure_header").get());
-                            failureAlert.setContentText(val("alert_delete_failure_content").get());
-                            failureAlert.showAndWait();
+                String filePath = file.getAbsolutePath();
+                MugHistory.MugEntry entry = mugHistory.findByFilePath(filePath);
+                Stage currentStage = (Stage) getScene().getWindow();
+                if (entry != null && mugHistory.isActiveFile(filePath) && entry.getStage() != currentStage) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle(val("alert_delete_active_title").get());
+                    alert.setHeaderText(val("alert_delete_active_header").get());
+                    alert.setContentText(val("alert_delete_active_content").get());
+                    alert.showAndWait();
+                } else {
+                    Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                    confirmAlert.setTitle(val("alert_delete_confirm_title").get());
+                    confirmAlert.setHeaderText(val("alert_delete_confirm_header").get());
+                    confirmAlert.setContentText(val("alert_delete_confirm_content").get());
+                    confirmAlert.showAndWait().ifPresent(response -> {
+                        if (response == ButtonType.OK) {
+                            if (file.delete()) {
+                                mugHistory.deleteByFilePath(filePath);
+                                updateRecentMenu();
+                                Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                                successAlert.setTitle(val("alert_delete_success_title").get());
+                                successAlert.setHeaderText(val("alert_delete_success_header").get());
+                                successAlert.setContentText(val("alert_delete_success_content").get());
+                                successAlert.showAndWait();
+                            } else {
+                                Alert failureAlert = new Alert(Alert.AlertType.ERROR);
+                                failureAlert.setTitle(val("alert_delete_failure_title").get());
+                                failureAlert.setHeaderText(val("alert_delete_failure_header").get());
+                                failureAlert.setContentText(val("alert_delete_failure_content").get());
+                                failureAlert.showAndWait();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
         return fileDeleteItem;
     }
-
 
     private Menu buildViewMenu() {
         var menu = new Menu();

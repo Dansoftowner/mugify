@@ -1,5 +1,6 @@
 package com.dansoftware.mugify.gui;
 
+import com.dansoftware.mugify.mug.MugHistory;
 import com.pixelduke.transit.TransitStyleClass;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -19,9 +20,9 @@ public class MainView extends BorderPane {
     private final BooleanProperty editorVisible = new SimpleBooleanProperty(true);
     private final BooleanProperty detailsVisible = new SimpleBooleanProperty(true);
 
-    public MainView() {
+    public MainView(MugHistory mugHistory) {
         mugGrid = new MugGrid();
-        menuBar = new MugifyMenuBar(mugGrid);
+        menuBar = new MugifyMenuBar(mugGrid, mugHistory);
         mugEditorTabPane = new MugEditorTabPane(mugGrid.getMugTuple());
         mugDetailsView = new MugDetailsView(mugGrid.getMugTuple());
 
