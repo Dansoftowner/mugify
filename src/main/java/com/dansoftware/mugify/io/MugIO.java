@@ -24,7 +24,8 @@ public class MugIO {
                 mugLike.getBottomColor(),
                 mugLike.getHandleRadius(),
                 mugLike.getHandleColor(),
-                mugLike.getHandleWidth()
+                mugLike.getHandleWidth(),
+                mugLike.getName()
         );
 
         try (var writer = new BufferedWriter(new FileWriter(filePath))) {
@@ -48,6 +49,7 @@ public class MugIO {
             mugLike.setHandleRadius(data.handleRadius);
             mugLike.setHandleColor(data.handleColor);
             mugLike.setHandleWidth(data.handleWidth);
+            mugLike.setName(data.name);
         }
     }
 
@@ -61,10 +63,11 @@ public class MugIO {
         double handleRadius;
         Color handleColor;
         double handleWidth;
+        String name;
 
         public MugLikeData(double borderThickness, double radius, double height, Color outerColor,
                            Color innerColor, Color bottomColor, double handleRadius, Color handleColor,
-                           double handleWidth) {
+                           double handleWidth, String name) {
             this.borderThickness = borderThickness;
             this.radius = radius;
             this.height = height;
@@ -74,6 +77,7 @@ public class MugIO {
             this.handleRadius = handleRadius;
             this.handleColor = handleColor;
             this.handleWidth = handleWidth;
+            this.name = name;
         }
     }
 
