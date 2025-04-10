@@ -37,6 +37,13 @@ public class MugDetailsView extends ScrollPane {
         TextField nameField = new TextField();
         nameField.promptTextProperty().bind(val("mug_name"));
         nameField.textProperty().bindBidirectional(mug.nameProperty());
+        nameField.textProperty().addListener((_, oldValue, newValue) -> {
+            // Should be a valid file name, if it isn't we decline it
+            if (newValue.matches(".*[<>:\"/\\\\|?*].*")) {
+                nameField.setText(oldValue);
+            }
+        });
+
         GridPane.setHgrow(nameField, Priority.ALWAYS);
         GridPane.setColumnSpan(nameField, 2);
         grid.add(nameField, 0, 0);
