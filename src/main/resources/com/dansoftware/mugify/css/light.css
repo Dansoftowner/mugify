@@ -2,7 +2,7 @@
     -fx-background-color: rgba(0, 0, 0, 0.2);
 }
 
-.mug-editor-tab-pane-content {
+.mug-editor-tab-pane-content, .mug-details-view-content {
     -fx-background-color: rgba(0, 0, 0, 0.05);
 }
 
@@ -10,6 +10,6 @@
     -fx-background-color: rgba(0, 0, 0, 0.1);
 }
 
-.bottom-toolbar {
+.top-toolbar {
    -fx-background-color: rgba(0, 0, 0, 0.2);
 }

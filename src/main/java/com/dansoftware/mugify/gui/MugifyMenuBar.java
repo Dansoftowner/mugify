@@ -79,7 +79,7 @@ public class MugifyMenuBar extends MenuBar {
             fileChooser.getExtensionFilters().add(
                     new FileChooser.ExtensionFilter(val("filechooser_mugify_filter").get(), "*.mugify")
             );
-            fileChooser.setInitialFileName("mug.mugify");
+            fileChooser.setInitialFileName("%s.mugify".formatted(mugGrid.getMugTuple().getName()));
             var outputFile = fileChooser.showSaveDialog(getScene().getWindow());
             if (outputFile != null) {
                 try {

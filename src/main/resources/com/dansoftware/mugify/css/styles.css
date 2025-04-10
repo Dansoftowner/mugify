@@ -12,6 +12,10 @@
 
 .title-label {
     -fx-font-weight: bold;
-    -fx-font-size: 16px;
+    -fx-font-size: 1.3em;
     -fx-padding: 5;
+}
+
+.mug-editor-tab-pane-content > *, .mug-details-view-content > *{
+    -fx-font-size: 1.2em;
 }
