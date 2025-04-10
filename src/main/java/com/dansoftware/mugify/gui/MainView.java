@@ -5,6 +5,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 
 import static com.dansoftware.mugify.i18n.I18NUtils.val;
 
@@ -24,10 +25,9 @@ public class MainView extends BorderPane {
         mugEditorTabPane.visibleProperty().bind(editorVisible);
         mugEditorTabPane.managedProperty().bind(editorVisible);
 
-        setTop(menuBar);
+        setTop(new VBox(menuBar, new BottomToolbar()));
         setCenter(mugGrid);
         setRight(mugEditorTabPane);
-        setBottom(new BottomToolbar());
 
         // for proper responsiveness
         mugGrid.maxWidthProperty().bind(this.widthProperty());

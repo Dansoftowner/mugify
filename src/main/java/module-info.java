@@ -3,6 +3,7 @@ module com.dansoftware.mugify {
     requires com.google.gson;
     requires com.pixelduke.transit;
     requires com.jthemedetector;
+    requires javafx.base;
 
     exports com.dansoftware.mugify;
 

@@ -1,10 +1,7 @@
 package com.dansoftware.mugify.mug;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -14,10 +11,6 @@ import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.transform.Rotate;
 
-/**
- * The mug body
- * @author Daniel Gyoerffy
- */
 public class Mug extends Group implements MugLike {
 
     public static final double DEFAULT_BORDER_THICKNESS = 10;
@@ -32,6 +25,8 @@ public class Mug extends Group implements MugLike {
     public static final double DEFAULT_HANDLE_RADIUS = 25;
     public static final double DEFAULT_HANDLE_WIDTH = 10;
 
+    public static final String DEFAULT_NAME = "Mug";
+
     private final DoubleProperty borderThickness;
     private final DoubleProperty radius;
     private final DoubleProperty height;
@@ -42,6 +37,7 @@ public class Mug extends Group implements MugLike {
     private final ObjectProperty<Color> handleColor;
     private final DoubleProperty handleWidth;
     private final DoubleProperty maxHandleRadius;
+    private final StringProperty name;
 
     public Mug() {
         borderThickness = new SimpleDoubleProperty(DEFAULT_BORDER_THICKNESS);
@@ -54,6 +50,7 @@ public class Mug extends Group implements MugLike {
         handleColor = new SimpleObjectProperty<>(DEFAULT_HANDLE_COLOR);
         handleWidth = new SimpleDoubleProperty(DEFAULT_HANDLE_WIDTH);
         maxHandleRadius = new SimpleDoubleProperty(MugBoundaries.MAX_HANDLE_RADIUS);
+        name = new SimpleStringProperty(DEFAULT_NAME);
         init();
     }
 
@@ -68,24 +65,20 @@ public class Mug extends Group implements MugLike {
         this.getChildren().addAll(mugBody, mugHandle);
 
         this.handleRadius.addListener((_, _, newValue) -> {
-
             double handleRadius = (double) newValue;
             while (MugBoundaries.HEIGHT_HANDLE_RADIUS_RATIO > this.height.get() / handleRadius) {
                 handleRadius -= 0.1;
             }
-
             this.handleRadius.set(handleRadius);
             this.maxHandleRadius.set(handleRadius);
-            //System.out.println(newValue + ", Setting back: " + handleRadius);
         });
 
         this.height.addListener((_, _, newValue) -> {
             double height = (double) newValue;
             double handleRadius = this.handleRadius.get();
             while (MugBoundaries.HEIGHT_HANDLE_RADIUS_RATIO > height / handleRadius) {
-                 handleRadius -= 0.1;
+                handleRadius -= 0.1;
             }
-
             this.handleRadius.set(handleRadius);
             this.maxHandleRadius.set(handleRadius);
         });
@@ -108,8 +101,6 @@ public class Mug extends Group implements MugLike {
         innerBody.heightProperty().bind(this.height.add(0.5));
 
         PhongMaterial innerMaterial = new PhongMaterial();
-
-        // if the outer and inner colors are the same we make sure that there is still a color-difference
         var innerColor = Bindings.createObjectBinding(() -> {
             if (this.innerColor.get().equals(this.outerColor.get())) {
                 Color color = this.innerColor.get();
@@ -161,24 +152,6 @@ public class Mug extends Group implements MugLike {
             segment.setRotate(Math.toDegrees(angle) + 90);
             handle.getChildren().add(segment);
         }
-
-        /*int numSegments = 1000;
-        double arcAngle = 180.0;
-        double radius = 25.0;
-        double handleWidth = 10.0;
-
-        for (int i = 0; i < numSegments; i++) {
-            double angle = Math.toRadians(arcAngle / (numSegments - 1) * i - 90);
-            double x = 50 + radius * Math.cos(angle);
-            double y = radius * Math.sin(angle);
-            Box segment = new Box(handleWidth, handleWidth, handleWidth);
-            segment.setMaterial(handleMaterial);
-            segment.setTranslateX(x);
-            segment.setTranslateY(y);
-            segment.setRotationAxis(Rotate.Z_AXIS);
-            segment.setRotate(Math.toDegrees(angle) + 90);
-            handle.getChildren().add(segment);
-        }*/
         return handle;
     }
 
@@ -238,7 +211,6 @@ public class Mug extends Group implements MugLike {
         return handleRadius;
     }
 
-    @Override
     public ObservableValue<? extends Number> maxHandleRadiusProperty() {
         return maxHandleRadius;
     }
@@ -293,5 +265,17 @@ public class Mug extends Group implements MugLike {
 
     public void setHandleWidth(double handleWidth) {
         this.handleWidth.set(handleWidth);
+    }
+
+    public String getName() {
+        return name.get();
+    }
+
+    public StringProperty nameProperty() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name.set(name);
     }
 }
