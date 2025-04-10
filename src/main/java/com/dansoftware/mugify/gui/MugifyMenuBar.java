@@ -67,6 +67,9 @@ public class MugifyMenuBar extends MenuBar {
         generateItem.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
         menu.getItems().add(generateItem);
 
+        var fileDeleteItem = fileDeleteMenuItem();
+        menu.getItems().add(fileDeleteItem);
+
         return menu;
     }
 
@@ -112,6 +115,45 @@ public class MugifyMenuBar extends MenuBar {
         });
         return fileOpenItem;
     }
+
+    private MenuItem fileDeleteMenuItem() {
+        var fileDeleteItem = new MenuItem();
+        fileDeleteItem.textProperty().bind(val("menu_file_delete"));
+        fileDeleteItem.setAccelerator(new KeyCodeCombination(KeyCode.D, KeyCombination.CONTROL_DOWN));
+        fileDeleteItem.setOnAction(_ -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle(val("filechooser_delete_title").get());
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter(val("filechooser_mugify_filter").get(), "*.mugify")
+            );
+            var file = fileChooser.showOpenDialog(getScene().getWindow());
+            if (file != null) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle(val("alert_delete_confirm_title").get());
+                alert.setHeaderText(val("alert_delete_confirm_header").get());
+                alert.setContentText(val("alert_delete_confirm_content").get());
+                alert.showAndWait().ifPresent(response -> {
+                    if (response == ButtonType.OK) {
+                        if (file.delete()) {
+                            Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                            successAlert.setTitle(val("alert_delete_success_title").get());
+                            successAlert.setHeaderText(val("alert_delete_success_header").get());
+                            successAlert.setContentText(val("alert_delete_success_content").get());
+                            successAlert.showAndWait();
+                        } else {
+                            Alert failureAlert = new Alert(Alert.AlertType.ERROR);
+                            failureAlert.setTitle(val("alert_delete_failure_title").get());
+                            failureAlert.setHeaderText(val("alert_delete_failure_header").get());
+                            failureAlert.setContentText(val("alert_delete_failure_content").get());
+                            failureAlert.showAndWait();
+                        }
+                    }
+                });
+            }
+        });
+        return fileDeleteItem;
+    }
+
 
     private Menu buildViewMenu() {
         var menu = new Menu();
