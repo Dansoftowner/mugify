@@ -17,11 +17,13 @@ import java.util.Locale;
 import static com.dansoftware.mugify.i18n.I18NUtils.*;
 
 public class MugifyMenuBar extends MenuBar {
+    private final MainView mainView;
     private final MugGrid mugGrid;
     private final MugRandomizer randomizer;
 
-    public MugifyMenuBar(MugGrid mugGrid) {
-        this.mugGrid = mugGrid;
+    public MugifyMenuBar(MainView mainView) {
+        this.mainView = mainView;
+        this.mugGrid = mainView.getMugGrid();
         this.randomizer = new MugRandomizer();
         this.buildMenuStructure();
     }
@@ -166,6 +168,20 @@ public class MugifyMenuBar extends MenuBar {
         var menu = new Menu();
         menu.textProperty().bind(val("menu_view"));
         menu.setGraphic(new FontIcon(MaterialDesignV.VIEW_GRID));
+
+        var mugDetailsItem = new CheckMenuItem();
+        mugDetailsItem.textProperty().bind(val("mug_details"));
+        mugDetailsItem.setGraphic(new FontIcon(MaterialDesignI.INFORMATION));
+        mugDetailsItem.selectedProperty().bindBidirectional(mainView.detailsVisibleProperty());
+
+        menu.getItems().add(mugDetailsItem);
+
+        var mugEditorItem = new CheckMenuItem();
+        mugEditorItem.textProperty().bind(val("mug_details"));
+        mugEditorItem.setGraphic(new FontIcon(MaterialDesignP.PENCIL));
+        mugEditorItem.selectedProperty().bindBidirectional(mainView.editorVisibleProperty());
+
+        menu.getItems().add(mugEditorItem);
 
         var viewportMenu = new Menu();
         viewportMenu.textProperty().bind(val("menu_view_views"));

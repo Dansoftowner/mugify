@@ -25,7 +25,7 @@ public class MainView extends BorderPane {
 
     public MainView() {
         mugGrid = new MugGrid();
-        menuBar = new MugifyMenuBar(mugGrid);
+        menuBar = new MugifyMenuBar(this);
         mugEditorTabPane = new MugEditorTabPane(mugGrid.getMugTuple());
         mugDetailsView = new MugDetailsView(mugGrid.getMugTuple());
 
@@ -46,12 +46,32 @@ public class MainView extends BorderPane {
         mugGrid.setMinSize(0, 0);
     }
 
-    public MugGrid getMugGrid() {
-        return mugGrid;
+    public boolean isEditorVisible() {
+        return editorVisible.get();
     }
 
-    public MugifyMenuBar getMenuBar() {
-        return menuBar;
+    public BooleanProperty editorVisibleProperty() {
+        return editorVisible;
+    }
+
+    public void setEditorVisible(boolean editorVisible) {
+        this.editorVisible.set(editorVisible);
+    }
+
+    public boolean isDetailsVisible() {
+        return detailsVisible.get();
+    }
+
+    public BooleanProperty detailsVisibleProperty() {
+        return detailsVisible;
+    }
+
+    public void setDetailsVisible(boolean detailsVisible) {
+        this.detailsVisible.set(detailsVisible);
+    }
+
+    public MugGrid getMugGrid() {
+        return mugGrid;
     }
 
     private final class TopToolbar extends BorderPane {
