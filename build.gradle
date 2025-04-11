@@ -36,7 +36,7 @@ application {
 
 javafx {
     version = '17.0.6'
-    modules = ['javafx.controls', 'javafx.fxml']
+    modules = ['javafx.controls', 'javafx.web', 'javafx.fxml']
 }
 
 dependencies {
@@ -45,6 +45,7 @@ dependencies {
     implementation 'com.github.Dansoftowner:jSystemThemeDetector:3.6'
     implementation 'org.kordamp.ikonli:ikonli-javafx:12.3.1'
     implementation 'org.kordamp.ikonli:ikonli-materialdesign2-pack:12.3.1'
+    implementation 'one.jpro.platform:jpro-mdfx:0.5.6'
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
