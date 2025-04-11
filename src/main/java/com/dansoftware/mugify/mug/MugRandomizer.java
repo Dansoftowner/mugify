@@ -2,7 +2,11 @@ package com.dansoftware.mugify.mug;
 
 import javafx.scene.paint.Color;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Random;
+
+import static com.dansoftware.mugify.i18n.I18NUtils.val;
 
 public class MugRandomizer {
 
@@ -16,6 +20,7 @@ public class MugRandomizer {
     }
 
     public void apply(MugLike mug) {
+        mug.setName(randomMugName());
         mug.setHeight(randomDouble(MugBoundaries.MIN_HEIGHT, MugBoundaries.MAX_HEIGHT));
         mug.setRadius(randomDouble(MugBoundaries.MIN_RADIUS, MugBoundaries.MAX_RADIUS));
         mug.setBorderThickness(randomDouble(MugBoundaries.MIN_BORDER_THICKNESS, MugBoundaries.MAX_BORDER_THICKNESS));
@@ -36,5 +41,13 @@ public class MugRandomizer {
         var green = random.nextDouble(1.0);
         var blue = random.nextDouble(1.0);
         return new Color(red, green, blue, 1.0);
+    }
+
+    public static String randomMugName() {
+        String baseName = val("mug_base_name").get();
+        LocalDateTime dt = LocalDateTime.now();
+        String dateString = dt.format(DateTimeFormatter.ofPattern("yyMMdd_hhmmss"));
+        long randomFactor = System.currentTimeMillis() % 1000;
+        return "%s_%s_%d".formatted(baseName, dateString, randomFactor);
     }
 }

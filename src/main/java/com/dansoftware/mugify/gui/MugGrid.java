@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.dansoftware.mugify.i18n.I18NUtils.val;
+import static com.dansoftware.mugify.mug.MugRandomizer.randomMugName;
 
 public class MugGrid extends GridPane {
 
@@ -77,6 +78,7 @@ public class MugGrid extends GridPane {
         this.mugTuple = new MugTuple(mugs.values());
         this.viewport = new SimpleObjectProperty<>();
         this.subScenes = new HashMap<>();
+        this.mugTuple.setName(randomMugName());
         this.init();
         this.getStyleClass().add(TransitStyleClass.BACKGROUND);
         this.getStyleClass().add(STYLE_CLASS);
