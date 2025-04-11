@@ -8,6 +8,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.materialdesign2.*;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -34,6 +36,7 @@ public class MugifyMenuBar extends MenuBar {
     private Menu buildLanguageMenu() {
         Menu menu = new Menu();
         menu.textProperty().bind(val("menu_language"));
+        menu.setGraphic(new FontIcon(MaterialDesignG.GOOGLE_TRANSLATE));
 
         ToggleGroup languageGroup = new ToggleGroup();
 
@@ -52,6 +55,7 @@ public class MugifyMenuBar extends MenuBar {
     private Menu buildFileMenu() {
         var menu = new Menu();
         menu.textProperty().bind(val("menu_file"));
+        menu.setGraphic(new FontIcon(MaterialDesignF.FOLDER));
 
         var fileOpenItem = fileOpenMenuItem();
         fileOpenItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
@@ -63,6 +67,7 @@ public class MugifyMenuBar extends MenuBar {
 
         var generateItem = new MenuItem();
         generateItem.textProperty().bind(val("menu_file_generate"));
+        generateItem.setGraphic(new FontIcon(MaterialDesignS.SHUFFLE));
         generateItem.setOnAction(_ -> randomizer.apply(mugGrid.getMugTuple()));
         generateItem.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
         menu.getItems().add(generateItem);
@@ -76,6 +81,7 @@ public class MugifyMenuBar extends MenuBar {
     private MenuItem fileSaveMenuItem() {
         var fileSaveItem = new MenuItem();
         fileSaveItem.textProperty().bind(val("menu_file_save"));
+        fileSaveItem.setGraphic(new FontIcon(MaterialDesignF.FLOPPY));
         fileSaveItem.setOnAction(_ -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle(val("filechooser_save_title").get());
@@ -98,6 +104,7 @@ public class MugifyMenuBar extends MenuBar {
     private MenuItem fileOpenMenuItem() {
         var fileOpenItem = new MenuItem();
         fileOpenItem.textProperty().bind(val("menu_file_open"));
+        fileOpenItem.setGraphic(new FontIcon(MaterialDesignF.FOLDER_OPEN));
         fileOpenItem.setOnAction(_ -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle(val("filechooser_open_title").get());
@@ -119,6 +126,7 @@ public class MugifyMenuBar extends MenuBar {
     private MenuItem fileDeleteMenuItem() {
         var fileDeleteItem = new MenuItem();
         fileDeleteItem.textProperty().bind(val("menu_file_delete"));
+        fileDeleteItem.setGraphic(new FontIcon(MaterialDesignD.DELETE));
         fileDeleteItem.setAccelerator(new KeyCodeCombination(KeyCode.D, KeyCombination.CONTROL_DOWN));
         fileDeleteItem.setOnAction(_ -> {
             FileChooser fileChooser = new FileChooser();
@@ -154,17 +162,19 @@ public class MugifyMenuBar extends MenuBar {
         return fileDeleteItem;
     }
 
-
     private Menu buildViewMenu() {
         var menu = new Menu();
         menu.textProperty().bind(val("menu_view"));
+        menu.setGraphic(new FontIcon(MaterialDesignV.VIEW_GRID));
 
         var viewportMenu = new Menu();
         viewportMenu.textProperty().bind(val("menu_view_views"));
+        viewportMenu.setGraphic(new FontIcon(MaterialDesignV.VIEW_LIST));
 
         ToggleGroup viewportGroup = new ToggleGroup();
         for (MugGrid.Viewport value : MugGrid.Viewport.values()) {
             RadioMenuItem item = new RadioMenuItem();
+            item.setGraphic(new FontIcon(value.getIcon()));
             item.textProperty().bind(val(value.getId()));
             item.setToggleGroup(viewportGroup);
             mugGrid.viewportProperty().addListener((_, _, newValue) -> {
@@ -181,13 +191,19 @@ public class MugifyMenuBar extends MenuBar {
 
         var uiThemeMenu = new Menu();
         uiThemeMenu.textProperty().bind(val("menu_view_ui_theme"));
+        uiThemeMenu.setGraphic(new FontIcon(MaterialDesignT.THEME_LIGHT_DARK));
 
         var darkThemeItem = new RadioMenuItem();
         darkThemeItem.textProperty().bind(val("theme_dark"));
+        darkThemeItem.setGraphic(new FontIcon(MaterialDesignM.MOON_WANING_CRESCENT));
+
         var lightThemeItem = new RadioMenuItem();
         lightThemeItem.textProperty().bind(val("theme_light"));
+        lightThemeItem.setGraphic(new FontIcon(MaterialDesignW.WHITE_BALANCE_SUNNY));
+
         var syncThemeItem = new RadioMenuItem();
         syncThemeItem.textProperty().bind(val("theme_sync"));
+        syncThemeItem.setGraphic(new FontIcon(MaterialDesignS.SYNC));
 
         sceneProperty().addListener((_, _, _) -> {
             getScene().windowProperty().addListener((_, _, win) -> {
@@ -216,11 +232,15 @@ public class MugifyMenuBar extends MenuBar {
     private Menu buildHelpMenu() {
         var menu = new Menu();
         menu.textProperty().bind(val("menu_help"));
+        menu.setGraphic(new FontIcon(MaterialDesignH.HELP));
 
         var guideItem = new MenuItem();
         guideItem.textProperty().bind(val("menu_help_guide"));
+        guideItem.setGraphic(new FontIcon(MaterialDesignH.HELP_CIRCLE));
+
         var aboutItem = new MenuItem();
         aboutItem.textProperty().bind(val("menu_help_about"));
+        aboutItem.setGraphic(new FontIcon(MaterialDesignI.INFORMATION));
 
         menu.getItems().add(guideItem);
         menu.getItems().add(aboutItem);

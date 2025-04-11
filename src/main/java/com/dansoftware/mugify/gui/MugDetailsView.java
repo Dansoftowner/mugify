@@ -11,6 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignI;
 
 import java.text.NumberFormat;
 
@@ -59,6 +61,7 @@ public class MugDetailsView extends ScrollPane {
         VBox vbox = new VBox();
 
         Label titleLabel = new Label();
+        titleLabel.setGraphic(new FontIcon(MaterialDesignI.INFORMATION));
         titleLabel.textProperty().bind(val("mug_details"));
         titleLabel.getStyleClass().add("title-label");
         titleLabel.prefWidthProperty().bind(vbox.widthProperty());

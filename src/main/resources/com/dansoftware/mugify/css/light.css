@@ -21,3 +21,7 @@
 .mug-grid .viewport-box {
     -fx-border-color: #b5b4b1;
 }
+
+.toggle-button:selected .ikonli-font-icon {
+    -fx-icon-color: #FFFFFF;
+}

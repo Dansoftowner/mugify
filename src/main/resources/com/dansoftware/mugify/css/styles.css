@@ -1,5 +1,6 @@
 .root {
     -fx-background-color: transparent;
+    -fx-font-size: 1.1em;
 }
 
 .viewport-label {
@@ -7,17 +8,17 @@
     -fx-background-color: rgba(0, 0, 0, 0.4);
     -fx-background-radius: 5px;
     -fx-border-radius: 5px;
-    -fx-font-size: 2em;
+    -fx-font-size: 1.5em;
 }
 
 .title-label {
     -fx-font-weight: bold;
-    -fx-font-size: 1.3em;
+    -fx-font-size: 1.2em;
     -fx-padding: 5;
 }
 
 .mug-editor-tab-pane-content > *, .mug-details-view-content > *{
-    -fx-font-size: 1.2em;
+    -fx-font-size: 1.15em;
 }
 
 .mug-grid .viewport-box {

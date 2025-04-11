@@ -15,6 +15,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignP;
 
 import static com.dansoftware.mugify.i18n.I18NUtils.val;
 
@@ -161,6 +163,7 @@ public class MugEditorTabPane extends TabPane {
 
     private Label createTitleLabel(String key, VBox vbox) {
         Label label = new Label();
+        label.setGraphic(new FontIcon(MaterialDesignP.PENCIL));
         label.textProperty().bind(val(key));
         label.getStyleClass().add("title-label");
         label.prefWidthProperty().bind(vbox.widthProperty());

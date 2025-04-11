@@ -6,10 +6,12 @@ import com.pixelduke.transit.TransitTheme;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class MainWindow extends Stage {
@@ -45,6 +47,7 @@ public class MainWindow extends Stage {
         setSize();
         centerOnScreen();
         initErrorHandling();
+        initIcon();
     }
 
     private void setSize() {
@@ -68,6 +71,13 @@ public class MainWindow extends Stage {
                 alert.showAndWait();
             });
         });
+    }
+
+    private void initIcon() {
+        for (int resolution : List.of(16, 24, 32, 64, 256)) {
+            System.out.println();
+            this.getIcons().add(new Image(getClass().getResourceAsStream("/com/dansoftware/mugify/img/cup_%dpx.png".formatted(resolution))));
+        }
     }
 
     public boolean isSyncTheme() {

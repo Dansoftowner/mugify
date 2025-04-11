@@ -11,8 +11,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
+import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignF;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignV;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,20 +25,26 @@ import static com.dansoftware.mugify.i18n.I18NUtils.val;
 public class MugGrid extends GridPane {
 
     public enum Viewport {
-        SIDE_SCENE("viewport_side"),
-        TOP_SCENE("viewport_top"),
-        BOTTOM_SCENE("viewport_bottom"),
-        SCENE_3D("viewport_3d"),
-        ALL_SCENES("viewport_all");
+        SIDE_SCENE("viewport_side", MaterialDesignC.COFFEE),
+        TOP_SCENE("viewport_top", MaterialDesignC.CIRCLE_OUTLINE),
+        BOTTOM_SCENE("viewport_bottom", MaterialDesignC.CIRCLE),
+        SCENE_3D("viewport_3d", MaterialDesignC.CUBE),
+        ALL_SCENES("viewport_all", MaterialDesignV.VIEW_GRID);
 
         private final String id;
+        private final Ikon icon;
 
-        Viewport(String id) {
+        Viewport(String id, Ikon icon) {
             this.id = id;
+            this.icon = icon;
         }
 
         public String getId() {
             return this.id;
+        }
+
+        public Ikon getIcon() {
+            return this.icon;
         }
     }
 
@@ -106,6 +115,7 @@ public class MugGrid extends GridPane {
             topHeader.getStyleClass().add("viewport-top-header");
 
             var label = new Label();
+            label.setGraphic(new FontIcon(vp.icon));
             label.textProperty().bind(val(vp.id));
             label.getStyleClass().add("viewport-label");
 
