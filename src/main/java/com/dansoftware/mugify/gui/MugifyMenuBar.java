@@ -173,6 +173,7 @@ public class MugifyMenuBar extends MenuBar {
         mugDetailsItem.textProperty().bind(val("mug_details"));
         mugDetailsItem.setGraphic(new FontIcon(MaterialDesignI.INFORMATION));
         mugDetailsItem.selectedProperty().bindBidirectional(mainView.detailsVisibleProperty());
+        mugDetailsItem.setAccelerator(new KeyCodeCombination(KeyCode.D, KeyCombination.ALT_DOWN, KeyCombination.CONTROL_DOWN));
 
         menu.getItems().add(mugDetailsItem);
 
@@ -180,6 +181,7 @@ public class MugifyMenuBar extends MenuBar {
         mugEditorItem.textProperty().bind(val("mug_details"));
         mugEditorItem.setGraphic(new FontIcon(MaterialDesignP.PENCIL));
         mugEditorItem.selectedProperty().bindBidirectional(mainView.editorVisibleProperty());
+        mugEditorItem.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.ALT_DOWN, KeyCombination.CONTROL_DOWN));
 
         menu.getItems().add(mugEditorItem);
 
