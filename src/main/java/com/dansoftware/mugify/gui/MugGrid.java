@@ -8,6 +8,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.scene.*;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
@@ -25,18 +28,20 @@ import static com.dansoftware.mugify.i18n.I18NUtils.val;
 public class MugGrid extends GridPane {
 
     public enum Viewport {
-        SIDE_SCENE("viewport_side", MaterialDesignC.COFFEE),
-        TOP_SCENE("viewport_top", MaterialDesignC.CIRCLE_OUTLINE),
-        BOTTOM_SCENE("viewport_bottom", MaterialDesignC.CIRCLE),
-        SCENE_3D("viewport_3d", MaterialDesignC.CUBE),
-        ALL_SCENES("viewport_all", MaterialDesignV.VIEW_GRID);
+        SIDE_SCENE("viewport_side", MaterialDesignC.COFFEE, new KeyCodeCombination(KeyCode.F1, KeyCombination.CONTROL_DOWN)),
+        TOP_SCENE("viewport_top", MaterialDesignC.CIRCLE_OUTLINE, new KeyCodeCombination(KeyCode.F2, KeyCombination.CONTROL_DOWN)),
+        BOTTOM_SCENE("viewport_bottom", MaterialDesignC.CIRCLE, new KeyCodeCombination(KeyCode.F3, KeyCombination.CONTROL_DOWN)),
+        SCENE_3D("viewport_3d", MaterialDesignC.CUBE, new KeyCodeCombination(KeyCode.F4, KeyCombination.CONTROL_DOWN)),
+        ALL_SCENES("viewport_all", MaterialDesignV.VIEW_GRID, new KeyCodeCombination(KeyCode.F5, KeyCombination.CONTROL_DOWN));
 
         private final String id;
         private final Ikon icon;
+        private final KeyCombination keyCombination;
 
-        Viewport(String id, Ikon icon) {
+        Viewport(String id, Ikon icon, KeyCombination keyCombination) {
             this.id = id;
             this.icon = icon;
+            this.keyCombination = keyCombination;
         }
 
         public String getId() {
@@ -45,6 +50,10 @@ public class MugGrid extends GridPane {
 
         public Ikon getIcon() {
             return this.icon;
+        }
+
+        public KeyCombination getKeyCombination() {
+            return keyCombination;
         }
     }
 

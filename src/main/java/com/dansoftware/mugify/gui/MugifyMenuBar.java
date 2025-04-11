@@ -177,6 +177,7 @@ public class MugifyMenuBar extends MenuBar {
             item.setGraphic(new FontIcon(value.getIcon()));
             item.textProperty().bind(val(value.getId()));
             item.setToggleGroup(viewportGroup);
+            item.setAccelerator(value.getKeyCombination());
             mugGrid.viewportProperty().addListener((_, _, newValue) -> {
                 item.setSelected(newValue == value);
             });
