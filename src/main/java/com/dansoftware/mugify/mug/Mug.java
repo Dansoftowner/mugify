@@ -131,7 +131,7 @@ public class Mug extends Group implements MugLike {
         var handleMaterial = new PhongMaterial();
         handleMaterial.diffuseColorProperty().bind(this.handleColor);
 
-        int numSegments = 50;
+        int numSegments = 100;
         double arcAngle = 180.0;
 
         for (int i = 0; i < numSegments; i++) {
