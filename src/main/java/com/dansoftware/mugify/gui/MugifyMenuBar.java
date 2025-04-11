@@ -260,6 +260,7 @@ public class MugifyMenuBar extends MenuBar {
         var aboutItem = new MenuItem();
         aboutItem.textProperty().bind(val("menu_help_about"));
         aboutItem.setGraphic(new FontIcon(MaterialDesignI.INFORMATION));
+        aboutItem.setOnAction(e -> new AboutWindow(((MainWindow) this.getScene().getWindow())).show());
 
         menu.getItems().add(guideItem);
         menu.getItems().add(aboutItem);

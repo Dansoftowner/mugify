@@ -10,7 +10,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        var window = new MainWindow();
+        var window = new MainWindow(getHostServices());
         window.show();
     }
 

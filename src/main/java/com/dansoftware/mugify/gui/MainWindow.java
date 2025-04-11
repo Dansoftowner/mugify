@@ -3,7 +3,9 @@ package com.dansoftware.mugify.gui;
 import com.jthemedetecor.OsThemeDetector;
 import com.pixelduke.transit.Style;
 import com.pixelduke.transit.TransitTheme;
+import javafx.application.HostServices;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
@@ -22,11 +24,14 @@ public class MainWindow extends Stage {
     private static final Style DEFAULT_UI_STYLE = Style.DARK;
 
     private final TransitTheme transitTheme;
+    private final HostServices hostServices;
 
     private boolean syncTheme;
     private final Consumer<Boolean> osThemeListener;
 
-    public MainWindow() {
+
+    public MainWindow(HostServices hostServices) {
+        this.hostServices = hostServices;
         this.transitTheme = new TransitTheme(DEFAULT_UI_STYLE);
         this.osThemeListener = isDark -> applyUIStyle(isDark ? Style.DARK : Style.LIGHT);
 
@@ -125,5 +130,13 @@ public class MainWindow extends Stage {
 
     public Style getTransitStyle() {
         return transitTheme.getStyle();
+    }
+
+    public ReadOnlyObjectProperty<Style> transitStyleProperty() {
+        return transitTheme.styleProperty();
+    }
+
+    public HostServices getHostServices() {
+        return hostServices;
     }
 }
