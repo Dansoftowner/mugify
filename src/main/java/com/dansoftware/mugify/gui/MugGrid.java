@@ -11,6 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignF;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +39,7 @@ public class MugGrid extends GridPane {
         }
     }
 
+    private static final String STYLE_CLASS = "mug-grid";
     private static final Viewport DEFAULT_VIEWPORT = Viewport.ALL_SCENES;
 
     private final MugTuple mugTuple;
@@ -58,6 +61,7 @@ public class MugGrid extends GridPane {
         this.subScenes = new HashMap<>();
         this.init();
         this.getStyleClass().add(TransitStyleClass.BACKGROUND);
+        this.getStyleClass().add(STYLE_CLASS);
     }
 
     private void init() {
@@ -98,22 +102,48 @@ public class MugGrid extends GridPane {
             boolean rotatable = (vp == Viewport.SCENE_3D);  // only the last scene will be rotatable
             SubScene scene = createMugSubScene(mug, rotatable);
 
+            var topHeader = new BorderPane();
+            topHeader.getStyleClass().add("viewport-top-header");
+
             var label = new Label();
             label.textProperty().bind(val(vp.id));
             label.getStyleClass().add("viewport-label");
 
-            VBox vBox = new VBox(label, scene);
+            var fullScreenButton = generateFullScreenBtn(vp);
+
+            topHeader.setLeft(label);
+            topHeader.setRight(fullScreenButton);
+
+            VBox vBox = new VBox(topHeader, scene);
+            vBox.getStyleClass().add("viewport-box");
             vBox.setMinSize(0, 0);
 
             scene.widthProperty().bind(vBox.widthProperty());
             scene.heightProperty().bind(vBox.heightProperty().subtract(label.heightProperty()));
 
             VBox.setVgrow(scene, Priority.ALWAYS);
-            VBox.setMargin(label, new Insets(5, 1, 0, 5));
+            VBox.setMargin(topHeader, new Insets(5, 5, 0, 5));
 
             getChildren().add(vBox);
             this.subScenes.put(vp, scene);
         }
+    }
+
+    private Label generateFullScreenBtn(Viewport vp) {
+        var fullScreenButton = new Label();
+        fullScreenButton.getStyleClass().add("viewport-label");
+        fullScreenButton.setCursor(Cursor.HAND);
+        fullScreenButton.setGraphic(new FontIcon(MaterialDesignF.FULLSCREEN));
+        fullScreenButton.setOnMouseClicked(_ -> {
+            if (viewport.get() == Viewport.ALL_SCENES) {
+                viewport.set(vp);
+                fullScreenButton.setGraphic(new FontIcon(MaterialDesignF.FULLSCREEN_EXIT));
+            } else {
+                viewport.set(Viewport.ALL_SCENES);
+                fullScreenButton.setGraphic(new FontIcon(MaterialDesignF.FULLSCREEN));
+            }
+        });
+        return fullScreenButton;
     }
 
     private void fitMugs() {

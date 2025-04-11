@@ -19,3 +19,7 @@
 .mug-editor-tab-pane-content > *, .mug-details-view-content > *{
     -fx-font-size: 1.2em;
 }
+
+.mug-grid .viewport-box {
+    -fx-border-width: 0.5px;
+}

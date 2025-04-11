@@ -4,6 +4,8 @@ module com.dansoftware.mugify {
     requires com.pixelduke.transit;
     requires com.jthemedetector;
     requires javafx.base;
+    requires org.kordamp.ikonli.javafx;
+    requires org.kordamp.ikonli.materialdesign2;
 
     exports com.dansoftware.mugify;
 

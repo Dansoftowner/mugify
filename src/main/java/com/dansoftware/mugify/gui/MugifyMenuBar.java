@@ -167,6 +167,9 @@ public class MugifyMenuBar extends MenuBar {
             RadioMenuItem item = new RadioMenuItem();
             item.textProperty().bind(val(value.getId()));
             item.setToggleGroup(viewportGroup);
+            mugGrid.viewportProperty().addListener((_, _, newValue) -> {
+                item.setSelected(newValue == value);
+            });
             item.setSelected(mugGrid.getViewport() == value);
             item.setOnAction(_ -> mugGrid.setViewport(value));
             viewportMenu.getItems().add(item);
