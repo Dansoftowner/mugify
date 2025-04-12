@@ -25,3 +25,15 @@
 .toggle-button:selected .ikonli-font-icon {
     -fx-icon-color: #FFFFFF;
 }
+
+.persistence-unsaved-label {
+    -fx-background-color: #ebe8e8;
+}
+
+.persistence-unsaved-changes-label {
+    -fx-background-color: #bdb40b;
+}
+
+.persistence-saved-label {
+    -fx-background-color: #0bbd43;
+}

@@ -21,3 +21,15 @@
 .mug-grid .viewport-box {
     -fx-border-color: #424242;
 }
+
+.persistence-unsaved-label {
+    -fx-background-color: #3f403f;
+}
+
+.persistence-unsaved-changes-label {
+    -fx-background-color: #828207;
+}
+
+.persistence-saved-label {
+    -fx-background-color: #0bbd43;
+}

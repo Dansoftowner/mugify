@@ -4,6 +4,8 @@ import com.dansoftware.mugify.io.MugIO;
 import com.dansoftware.mugify.mug.MugChangeObserver;
 import com.dansoftware.mugify.mug.MugRandomizer;
 import com.pixelduke.transit.Style;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.*;
@@ -21,11 +23,31 @@ import static com.dansoftware.mugify.i18n.I18NUtils.*;
 import static com.dansoftware.mugify.util.UncheckedAction.run;
 
 public class MugifyMenuBar extends MenuBar {
+
+    public enum PersistenceState {
+        /**
+         * Represents a state when a mug is not saved into any file.
+         */
+        UNSAVED,
+
+        /**
+         * Represents a state when a mug is saved into a file, but some changes are not commited.
+         */
+        UNSAVED_CHANGES,
+
+        /**
+         * Represents a state when a mug is completely saved to the disk.
+         */
+        SAVED
+    }
+
     private final MainView mainView;
     private final MugGrid mugGrid;
     private final MugRandomizer randomizer;
     private final MugChangeObserver mugChangeObserver;
     private final StringProperty mugFilePath;
+
+    private final ObjectBinding<PersistenceState> persistenceState;
 
     public MugifyMenuBar(MainView mainView) {
         this.mainView = mainView;
@@ -33,6 +55,16 @@ public class MugifyMenuBar extends MenuBar {
         this.mugGrid = mainView.getMugGrid();
         this.randomizer = new MugRandomizer();
         this.mugChangeObserver = new MugChangeObserver(mugGrid.getMugTuple());
+
+        this.persistenceState = Bindings.createObjectBinding(() -> {
+            if (mugFilePath.get() == null)
+                return PersistenceState.UNSAVED;
+            else if (mugChangeObserver.isChanged())
+                return PersistenceState.UNSAVED_CHANGES;
+            else
+                return PersistenceState.SAVED;
+        }, mugFilePath, mugChangeObserver.changedProperty());
+
         this.buildMenuStructure();
     }
 
@@ -95,14 +127,12 @@ public class MugifyMenuBar extends MenuBar {
         fileSaveItem.setGraphic(new FontIcon(MaterialDesignF.FLOPPY));
         fileSaveItem.disableProperty().bind(mugChangeObserver.changedProperty().not());
         fileSaveItem.setOnAction(_ -> {
-            if (mugFilePath.get() == null) {
+            if (persistenceState.get() == PersistenceState.UNSAVED) {
                 if (saveMugToNewFile())
                     mugChangeObserver.commit();
-            } else {
-                if (mugChangeObserver.isChanged()) {
-                    run(() -> MugIO.saveToJson(mugFilePath.get(), mugGrid.getMugTuple()));
-                    mugChangeObserver.commit();
-                }
+            } else if (persistenceState.get() == PersistenceState.UNSAVED_CHANGES){
+                run(() -> MugIO.saveToJson(mugFilePath.get(), mugGrid.getMugTuple()));
+                mugChangeObserver.commit();
             }
 
         });
@@ -115,7 +145,7 @@ public class MugifyMenuBar extends MenuBar {
         fileSaveAsItem.setGraphic(new FontIcon(MaterialDesignF.FLOPPY));
         fileSaveAsItem.setOnAction(_ -> {
            if (saveMugToNewFile())
-            mugChangeObserver.commit();
+               mugChangeObserver.commit();
         });
         return fileSaveAsItem;
     }
@@ -141,8 +171,8 @@ public class MugifyMenuBar extends MenuBar {
         fileOpenItem.textProperty().bind(val("menu_file_open"));
         fileOpenItem.setGraphic(new FontIcon(MaterialDesignF.FOLDER_OPEN));
         fileOpenItem.setOnAction(_ -> {
-            if (mugFilePath.get() != null && mugChangeObserver.isChanged()) {
-                // if current mug isn't saved
+            if (persistenceState.get() == PersistenceState.UNSAVED_CHANGES) {
+                // if current mug's changes aren't saved
                 if (!showUnsavedChangesAlert()) {
                     return;
                 }
@@ -168,7 +198,7 @@ public class MugifyMenuBar extends MenuBar {
         generateItem.textProperty().bind(val("menu_file_generate"));
         generateItem.setGraphic(new FontIcon(MaterialDesignS.SHUFFLE));
         generateItem.setOnAction(_ -> {
-            if (mugFilePath.get() != null && mugChangeObserver.isChanged()) {
+            if (persistenceState.get() == PersistenceState.UNSAVED_CHANGES) {
                 // if current mug isn't saved
                 if (!showUnsavedChangesAlert()) {
                     return;
@@ -345,5 +375,9 @@ public class MugifyMenuBar extends MenuBar {
 
         Optional<ButtonType> result = alert.showAndWait();
         return result.isPresent() && result.get().getButtonData() == ButtonBar.ButtonData.OK_DONE;
+    }
+
+    public ObjectBinding<PersistenceState> persistenceState() {
+        return this.persistenceState;
     }
 }

@@ -17,6 +17,13 @@
     -fx-padding: 5;
 }
 
+.persistence-label {
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-padding: 3px 5px;
+    -fx-font-weight: bolder;
+}
+
 .mug-editor-tab-pane-content > *, .mug-details-view-content > *{
     -fx-font-size: 1.15em;
 }
