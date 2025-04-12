@@ -20,6 +20,7 @@ public class MugTuple implements MugLike {
     private final DoubleProperty handleRadius;
     private final ObjectProperty<Color> handleColor;
     private final DoubleProperty handleWidth;
+    private final BooleanProperty handleRounded;
     private final StringProperty name;
 
     public MugTuple(Collection<? extends MugLike> mugs) {
@@ -32,6 +33,7 @@ public class MugTuple implements MugLike {
         this.handleRadius = new SimpleDoubleProperty(Mug.DEFAULT_HANDLE_RADIUS);
         this.handleColor = new SimpleObjectProperty<>(Mug.DEFAULT_HANDLE_COLOR);
         this.handleWidth = new SimpleDoubleProperty(Mug.DEFAULT_HANDLE_WIDTH);
+        this.handleRounded = new SimpleBooleanProperty(Mug.DEFAULT_HANDLE_ROUNDED);
         this.name = new SimpleStringProperty(Mug.DEFAULT_NAME);
         this.mugs = List.copyOf(mugs);
         this.init(this.mugs);
@@ -48,6 +50,7 @@ public class MugTuple implements MugLike {
             mug.handleRadiusProperty().bindBidirectional(this.handleRadius);
             mug.handleColorProperty().bindBidirectional(this.handleColor);
             mug.handleWidthProperty().bindBidirectional(this.handleWidth);
+            mug.handleRoundedProperty().bindBidirectional(this.handleRounded);
             mug.nameProperty().bindBidirectional(this.name);
         }
     }
@@ -162,6 +165,19 @@ public class MugTuple implements MugLike {
 
     public void setHandleWidth(double handleWidth) {
         this.handleWidth.set(handleWidth);
+    }
+
+    public boolean isHandleRounded() {
+        return handleRounded.get();
+    }
+
+    @Override
+    public BooleanProperty handleRoundedProperty() {
+        return handleRounded;
+    }
+
+    public void setHandleRounded(boolean handleRounded) {
+        this.handleRounded.set(handleRounded);
     }
 
     public String getName() {

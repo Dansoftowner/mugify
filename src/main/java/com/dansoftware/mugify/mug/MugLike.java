@@ -1,5 +1,6 @@
 package com.dansoftware.mugify.mug;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
@@ -44,6 +45,10 @@ public interface MugLike {
     double getHandleWidth();
     void setHandleWidth(double handleWidth);
     DoubleProperty handleWidthProperty();
+
+    boolean isHandleRounded();
+    void setHandleRounded(boolean handleRounded);
+    BooleanProperty handleRoundedProperty();
 
     String getName();
     StringProperty nameProperty();

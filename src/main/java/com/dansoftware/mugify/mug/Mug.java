@@ -24,6 +24,7 @@ public class Mug extends Group implements MugLike {
     public static final Color DEFAULT_HANDLE_COLOR = new Color(0.3922, 0.2196, 0.2353, 1.0);
     public static final double DEFAULT_HANDLE_RADIUS = 25;
     public static final double DEFAULT_HANDLE_WIDTH = 10;
+    public static final boolean DEFAULT_HANDLE_ROUNDED = true;
 
     public static final String DEFAULT_NAME = "Mug";
 
@@ -37,6 +38,7 @@ public class Mug extends Group implements MugLike {
     private final ObjectProperty<Color> handleColor;
     private final DoubleProperty handleWidth;
     private final DoubleProperty maxHandleRadius;
+    private final BooleanProperty handleRounded;
     private final StringProperty name;
 
     public Mug() {
@@ -49,6 +51,7 @@ public class Mug extends Group implements MugLike {
         handleRadius = new SimpleDoubleProperty(DEFAULT_HANDLE_RADIUS);
         handleColor = new SimpleObjectProperty<>(DEFAULT_HANDLE_COLOR);
         handleWidth = new SimpleDoubleProperty(DEFAULT_HANDLE_WIDTH);
+        handleRounded = new SimpleBooleanProperty(DEFAULT_HANDLE_ROUNDED);
         maxHandleRadius = new SimpleDoubleProperty(MugBoundaries.MAX_HANDLE_RADIUS);
         name = new SimpleStringProperty(DEFAULT_NAME);
         init();
@@ -137,20 +140,39 @@ public class Mug extends Group implements MugLike {
         for (int i = 0; i < numSegments; i++) {
             double angle = Math.toRadians(arcAngle / (numSegments - 1) * i - 90);
 
-            Box segment = new Box();
+            Box boxSegment = new Box();
+            Cylinder cylinderSegment = new Cylinder();
 
-            segment.depthProperty().bind(this.handleWidth);
-            segment.heightProperty().bind(this.handleWidth);
-            segment.widthProperty().bind(this.handleWidth);
+            boxSegment.visibleProperty().bind(this.handleRounded.not());
+            boxSegment.managedProperty().bind(this.handleRounded.not());
 
-            segment.setMaterial(handleMaterial);
+            cylinderSegment.visibleProperty().bind(this.handleRounded);
+            cylinderSegment.managedProperty().bind(this.handleRounded);
 
-            segment.translateXProperty().bind(this.handleRadius.multiply(Math.cos(angle)).add(this.radius));
-            segment.translateYProperty().bind(this.handleRadius.multiply(Math.sin(angle)));
+            cylinderSegment.radiusProperty().bind(this.handleWidth.divide(2));
+            cylinderSegment.heightProperty().bind(this.handleWidth);
 
-            segment.setRotationAxis(Rotate.Z_AXIS);
-            segment.setRotate(Math.toDegrees(angle) + 90);
-            handle.getChildren().add(segment);
+            boxSegment.widthProperty().bind(this.handleWidth);
+            boxSegment.heightProperty().bind(this.handleWidth);
+            boxSegment.depthProperty().bind(this.handleWidth);
+
+            boxSegment.setMaterial(handleMaterial);
+            cylinderSegment.setMaterial(handleMaterial);
+
+            boxSegment.translateXProperty().bind(this.handleRadius.multiply(Math.cos(angle)).add(this.radius));
+            cylinderSegment.translateXProperty().bind(this.handleRadius.multiply(Math.cos(angle)).add(this.radius));
+
+            boxSegment.translateYProperty().bind(this.handleRadius.multiply(Math.sin(angle)));
+            cylinderSegment.translateYProperty().bind(this.handleRadius.multiply(Math.sin(angle)));
+
+            boxSegment.setRotationAxis(Rotate.Z_AXIS);
+            cylinderSegment.setRotationAxis(Rotate.Z_AXIS);
+
+            cylinderSegment.setRotate(Math.toDegrees(angle));
+            boxSegment.setRotate(Math.toDegrees(angle));
+
+            handle.getChildren().add(boxSegment);
+            handle.getChildren().add(cylinderSegment);
         }
         return handle;
     }
@@ -261,6 +283,21 @@ public class Mug extends Group implements MugLike {
 
     public DoubleProperty handleWidthProperty() {
         return handleWidth;
+    }
+
+    @Override
+    public boolean isHandleRounded() {
+        return this.handleRounded.get();
+    }
+
+    @Override
+    public void setHandleRounded(boolean handleRounded) {
+        this.handleRounded.set(handleRounded);
+    }
+
+    @Override
+    public BooleanProperty handleRoundedProperty() {
+        return this.handleRounded;
     }
 
     public void setHandleWidth(double handleWidth) {

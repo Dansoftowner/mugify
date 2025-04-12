@@ -23,6 +23,7 @@ public class MugIO {
                 mugLike.getInnerColor(),
                 mugLike.getBottomColor(),
                 mugLike.getHandleRadius(),
+                mugLike.isHandleRounded(),
                 mugLike.getHandleColor(),
                 mugLike.getHandleWidth(),
                 mugLike.getName()
@@ -49,6 +50,7 @@ public class MugIO {
             mugLike.setHandleRadius(data.handleRadius);
             mugLike.setHandleColor(data.handleColor);
             mugLike.setHandleWidth(data.handleWidth);
+            mugLike.setHandleRounded(data.handleRounded);
             mugLike.setName(data.name);
         }
     }
@@ -63,11 +65,20 @@ public class MugIO {
         double handleRadius;
         Color handleColor;
         double handleWidth;
+        boolean handleRounded;
         String name;
 
-        public MugLikeData(double borderThickness, double radius, double height, Color outerColor,
-                           Color innerColor, Color bottomColor, double handleRadius, Color handleColor,
-                           double handleWidth, String name) {
+        public MugLikeData(double borderThickness,
+                           double radius,
+                           double height,
+                           Color outerColor,
+                           Color innerColor,
+                           Color bottomColor,
+                           double handleRadius,
+                           boolean handleRounded,
+                           Color handleColor,
+                           double handleWidth,
+                           String name) {
             this.borderThickness = borderThickness;
             this.radius = radius;
             this.height = height;
@@ -77,6 +88,7 @@ public class MugIO {
             this.handleRadius = handleRadius;
             this.handleColor = handleColor;
             this.handleWidth = handleWidth;
+            this.handleRounded = handleRounded;
             this.name = name;
         }
     }

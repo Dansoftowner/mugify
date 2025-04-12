@@ -15,6 +15,7 @@ public class MugRandomizer {
     public MugRandomizer() {
         this.random = new Random();
     }
+
     public MugRandomizer(long seed) {
         this.random = new Random(seed);
     }
@@ -26,6 +27,7 @@ public class MugRandomizer {
         mug.setBorderThickness(randomDouble(MugBoundaries.MIN_BORDER_THICKNESS, MugBoundaries.MAX_BORDER_THICKNESS));
         mug.setHandleRadius(randomDouble(MugBoundaries.MIN_HANDLE_RADIUS, MugBoundaries.MAX_HANDLE_RADIUS));
         mug.setHandleWidth(randomDouble(MugBoundaries.MIN_HANDLE_WIDTH, MugBoundaries.MAX_HANDLE_WIDTH));
+        mug.setHandleRounded(randomBoolean());
         mug.setBottomColor(randomColor());
         mug.setInnerColor(randomColor());
         mug.setOuterColor(randomColor());
@@ -34,6 +36,11 @@ public class MugRandomizer {
 
     private double randomDouble(double min, double max) {
         return this.random.nextDouble(min, max + 0.001);
+    }
+
+    private boolean randomBoolean() {
+        var randomInt = random.nextInt(100);
+        return randomInt > 10; // 10% chance for 'false'
     }
 
     private Color randomColor() {

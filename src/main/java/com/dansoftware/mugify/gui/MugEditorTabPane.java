@@ -8,12 +8,10 @@ import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignP;
@@ -116,9 +114,32 @@ public class MugEditorTabPane extends TabPane {
         handleWidthSlider.setShowTickMarks(true);
         addToGrid(grid, handleWidthLabel, handleWidthSlider, 1);
 
+        var toggleGroup = new ToggleGroup();
+
+        //at least one toggle should be selected
+        toggleGroup.selectedToggleProperty().addListener((_, oldToggle, newToggle) -> {
+            if (newToggle == null)
+                oldToggle.setSelected(true);
+        });
+
+        var roundedToggle = new ToggleButton();
+        roundedToggle.textProperty().bind(val("mug_handle_rounded"));
+        roundedToggle.setToggleGroup(toggleGroup);
+        roundedToggle.selectedProperty().bindBidirectional(mug.handleRoundedProperty());
+
+        var unRoundedToggle = new ToggleButton();
+        unRoundedToggle.textProperty().bind(val("mug_handle_not_rounded"));
+        unRoundedToggle.setToggleGroup(toggleGroup);
+        mug.handleRoundedProperty().addListener((_, _, newValue) ->
+                unRoundedToggle.setSelected(!newValue));
+
+        var toggleBox = new StackPane(new Group(new HBox(roundedToggle, unRoundedToggle)));
+        GridPane.setColumnSpan(toggleBox, 2);
+        grid.add(toggleBox, 0, 2);
+
         Label handleColorLabel = createLabel("mug_handle_color");
         ColorPicker handleColorPicker = createColorPicker(mug.handleColorProperty());
-        addToGrid(grid, handleColorLabel, handleColorPicker, 2);
+        addToGrid(grid, handleColorLabel, handleColorPicker, 3);
 
         ScrollPane scrollPane = createScrollPane(grid);
         VBox content = new VBox();
