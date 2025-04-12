@@ -1,8 +1,11 @@
 package com.dansoftware.mugify.gui;
 
 import com.dansoftware.mugify.io.MugIO;
+import com.dansoftware.mugify.mug.MugChangeObserver;
 import com.dansoftware.mugify.mug.MugRandomizer;
 import com.pixelduke.transit.Style;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -11,20 +14,25 @@ import javafx.stage.FileChooser;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign2.*;
 
-import java.io.IOException;
 import java.util.Locale;
+import java.util.Optional;
 
 import static com.dansoftware.mugify.i18n.I18NUtils.*;
+import static com.dansoftware.mugify.util.UncheckedAction.run;
 
 public class MugifyMenuBar extends MenuBar {
     private final MainView mainView;
     private final MugGrid mugGrid;
     private final MugRandomizer randomizer;
+    private final MugChangeObserver mugChangeObserver;
+    private final StringProperty mugFilePath;
 
     public MugifyMenuBar(MainView mainView) {
         this.mainView = mainView;
+        this.mugFilePath = new SimpleStringProperty();
         this.mugGrid = mainView.getMugGrid();
         this.randomizer = new MugRandomizer();
+        this.mugChangeObserver = new MugChangeObserver(mugGrid.getMugTuple());
         this.buildMenuStructure();
     }
 
@@ -67,10 +75,11 @@ public class MugifyMenuBar extends MenuBar {
         fileSaveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
         menu.getItems().add(fileSaveItem);
 
-        var generateItem = new MenuItem();
-        generateItem.textProperty().bind(val("menu_file_generate"));
-        generateItem.setGraphic(new FontIcon(MaterialDesignS.SHUFFLE));
-        generateItem.setOnAction(_ -> randomizer.apply(mugGrid.getMugTuple()));
+        var fileSaveAsItem = fileSaveAsMenuItem();
+        fileSaveAsItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN));
+        menu.getItems().add(fileSaveAsItem);
+
+        var generateItem = generateItem();
         generateItem.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
         menu.getItems().add(generateItem);
 
@@ -84,23 +93,47 @@ public class MugifyMenuBar extends MenuBar {
         var fileSaveItem = new MenuItem();
         fileSaveItem.textProperty().bind(val("menu_file_save"));
         fileSaveItem.setGraphic(new FontIcon(MaterialDesignF.FLOPPY));
+        fileSaveItem.disableProperty().bind(mugChangeObserver.changedProperty().not());
         fileSaveItem.setOnAction(_ -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle(val("filechooser_save_title").get());
-            fileChooser.getExtensionFilters().add(
-                    new FileChooser.ExtensionFilter(val("filechooser_mugify_filter").get(), "*.mugify")
-            );
-            fileChooser.setInitialFileName("%s.mugify".formatted(mugGrid.getMugTuple().getName()));
-            var outputFile = fileChooser.showSaveDialog(getScene().getWindow());
-            if (outputFile != null) {
-                try {
-                    MugIO.saveToJson(outputFile.getAbsolutePath(), mugGrid.getMugTuple());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+            if (mugFilePath.get() == null) {
+                if (saveMugToNewFile())
+                    mugChangeObserver.commit();
+            } else {
+                if (mugChangeObserver.isChanged()) {
+                    run(() -> MugIO.saveToJson(mugFilePath.get(), mugGrid.getMugTuple()));
+                    mugChangeObserver.commit();
                 }
             }
+
         });
         return fileSaveItem;
+    }
+
+    private MenuItem fileSaveAsMenuItem() {
+        var fileSaveAsItem = new MenuItem();
+        fileSaveAsItem.textProperty().bind(val("menu_file_save_as"));
+        fileSaveAsItem.setGraphic(new FontIcon(MaterialDesignF.FLOPPY));
+        fileSaveAsItem.setOnAction(_ -> {
+           if (saveMugToNewFile())
+            mugChangeObserver.commit();
+        });
+        return fileSaveAsItem;
+    }
+
+    private boolean saveMugToNewFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle(val("filechooser_save_title").get());
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter(val("filechooser_mugify_filter").get(), "*.mugify")
+        );
+        fileChooser.setInitialFileName("%s.mugify".formatted(mugGrid.getMugTuple().getName()));
+        var outputFile = fileChooser.showSaveDialog(getScene().getWindow());
+        if (outputFile != null) {
+            run(() -> MugIO.saveToJson(outputFile.getAbsolutePath(), mugGrid.getMugTuple()));
+            mugFilePath.set(outputFile.getAbsolutePath());
+            return true;
+        }
+        return false;
     }
 
     private MenuItem fileOpenMenuItem() {
@@ -108,6 +141,13 @@ public class MugifyMenuBar extends MenuBar {
         fileOpenItem.textProperty().bind(val("menu_file_open"));
         fileOpenItem.setGraphic(new FontIcon(MaterialDesignF.FOLDER_OPEN));
         fileOpenItem.setOnAction(_ -> {
+            if (mugFilePath.get() != null && mugChangeObserver.isChanged()) {
+                // if current mug isn't saved
+                if (!showUnsavedChangesAlert()) {
+                    return;
+                }
+            }
+
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle(val("filechooser_open_title").get());
             fileChooser.getExtensionFilters().add(
@@ -115,14 +155,30 @@ public class MugifyMenuBar extends MenuBar {
             );
             var file = fileChooser.showOpenDialog(getScene().getWindow());
             if (file != null) {
-                try {
-                    MugIO.loadFromJson(file.getAbsolutePath(), mugGrid.getMugTuple());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                run(() -> MugIO.loadFromJson(file.getAbsolutePath(), mugGrid.getMugTuple()));
+                mugChangeObserver.commit();
+                mugFilePath.set(file.getAbsolutePath());
             }
         });
         return fileOpenItem;
+    }
+
+    private MenuItem generateItem() {
+        var generateItem = new MenuItem();
+        generateItem.textProperty().bind(val("menu_file_generate"));
+        generateItem.setGraphic(new FontIcon(MaterialDesignS.SHUFFLE));
+        generateItem.setOnAction(_ -> {
+            if (mugFilePath.get() != null && mugChangeObserver.isChanged()) {
+                // if current mug isn't saved
+                if (!showUnsavedChangesAlert()) {
+                    return;
+                }
+            }
+
+            randomizer.apply(mugGrid.getMugTuple());
+            mugFilePath.set(null);
+        });
+        return generateItem;
     }
 
     private MenuItem fileDeleteMenuItem() {
@@ -145,6 +201,11 @@ public class MugifyMenuBar extends MenuBar {
                 alert.showAndWait().ifPresent(response -> {
                     if (response == ButtonType.OK) {
                         if (file.delete()) {
+                            if (file.getAbsolutePath().equals(mugFilePath.get())) {
+                                // if it is the currently opened one
+                                mugFilePath.set(null);
+                            }
+
                             Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
                             successAlert.setTitle(val("alert_delete_success_title").get());
                             successAlert.setHeaderText(val("alert_delete_success_header").get());
@@ -266,5 +327,23 @@ public class MugifyMenuBar extends MenuBar {
         menu.getItems().add(aboutItem);
 
         return menu;
+    }
+
+    /**
+     *
+     * @return {@code true} if user said 'OK' (meaning he doesn't care about unsaved changes)
+     */
+    private boolean showUnsavedChangesAlert() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.initOwner(getScene().getWindow());
+        alert.setTitle(val("unsaved.changes.dialog.title").get());
+        alert.setHeaderText(val("unsaved.changes.dialog.header").get());
+        alert.setContentText(val("unsaved.changes.dialog.content").get());
+        ButtonType yesButton = new ButtonType(val("unsaved.changes.dialog.yes").get(), ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButton = new ButtonType(val("unsaved.changes.dialog.cancel").get(), ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(yesButton, cancelButton);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        return result.isPresent() && result.get().getButtonData() == ButtonBar.ButtonData.OK_DONE;
     }
 }
