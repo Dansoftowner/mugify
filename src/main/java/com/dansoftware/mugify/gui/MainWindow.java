@@ -4,10 +4,8 @@ import com.jthemedetecor.OsThemeDetector;
 import com.pixelduke.transit.Style;
 import com.pixelduke.transit.TransitTheme;
 import javafx.application.HostServices;
-import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
@@ -51,7 +49,6 @@ public class MainWindow extends Stage {
 
         setSize();
         centerOnScreen();
-        initErrorHandling();
         initIcon();
     }
 
@@ -63,19 +60,6 @@ public class MainWindow extends Stage {
 
         setWidth(width);
         setHeight(height);
-    }
-
-    private void initErrorHandling() {
-        Thread.setDefaultUncaughtExceptionHandler((thread, e) -> {
-            Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.initOwner(this);
-                alert.setTitle("Error");
-                alert.setHeaderText("An unexpected error occurred");
-                alert.setContentText(e.getMessage() != null ? e.getMessage() : "Unknown error");
-                alert.showAndWait();
-            });
-        });
     }
 
     private void initIcon() {

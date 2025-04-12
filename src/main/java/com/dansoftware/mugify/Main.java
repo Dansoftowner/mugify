@@ -11,6 +11,9 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         var window = new MainWindow(getHostServices());
+
+        Thread.setDefaultUncaughtExceptionHandler(new MugifyExceptionHandler(window));
+
         window.show();
     }
 
