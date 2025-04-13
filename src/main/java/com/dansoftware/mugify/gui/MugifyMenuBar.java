@@ -355,7 +355,7 @@ public class MugifyMenuBar extends MenuBar {
 
         var viewportMenu = new Menu();
         viewportMenu.textProperty().bind(val("menu_view_views"));
-        viewportMenu.setGraphic(new FontIcon(MaterialDesignV.VIEW_LIST));
+        viewportMenu.setGraphic(new FontIcon(MaterialDesignE.EYE));
 
         ToggleGroup viewportGroup = new ToggleGroup();
         for (MugGrid.Viewport value : MugGrid.Viewport.values()) {
