@@ -21,6 +21,7 @@ import org.kordamp.ikonli.materialdesign2.MaterialDesignF;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignV;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.dansoftware.mugify.i18n.I18NUtils.val;
@@ -63,12 +64,12 @@ public class MugGrid extends GridPane {
 
     private final MugTuple mugTuple;
 
-    private final Map<Viewport, Mug> mugs = Map.of(
-            Viewport.SIDE_SCENE, new Mug(),
-            Viewport.TOP_SCENE, new Mug(),
-            Viewport.BOTTOM_SCENE, new Mug(),
-            Viewport.SCENE_3D, new Mug()
-    );
+    private final Map<Viewport, Mug> mugs = new LinkedHashMap<>() {{
+       put(Viewport.SIDE_SCENE, new Mug());
+       put(Viewport.TOP_SCENE, new Mug());
+       put(Viewport.BOTTOM_SCENE, new Mug());
+       put(Viewport.SCENE_3D, new Mug());
+    }};
 
     private final Map<Viewport, SubScene> subScenes;
 

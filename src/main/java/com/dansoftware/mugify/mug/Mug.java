@@ -2,7 +2,6 @@ package com.dansoftware.mugify.mug;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
@@ -52,7 +51,7 @@ public class Mug extends Group implements MugLike {
         handleColor = new SimpleObjectProperty<>(DEFAULT_HANDLE_COLOR);
         handleWidth = new SimpleDoubleProperty(DEFAULT_HANDLE_WIDTH);
         handleRounded = new SimpleBooleanProperty(DEFAULT_HANDLE_ROUNDED);
-        maxHandleRadius = new SimpleDoubleProperty(MugBoundaries.MAX_HANDLE_RADIUS);
+        maxHandleRadius = new SimpleDoubleProperty(MugBoundaries.calculateMaxHandleRadius(DEFAULT_HEIGHT));
         name = new SimpleStringProperty(DEFAULT_NAME);
         init();
     }
@@ -68,22 +67,21 @@ public class Mug extends Group implements MugLike {
         this.getChildren().addAll(mugBody, mugHandle);
 
         this.handleRadius.addListener((_, _, newValue) -> {
-            double handleRadius = (double) newValue;
-            while (MugBoundaries.HEIGHT_HANDLE_RADIUS_RATIO > this.height.get() / handleRadius) {
-                handleRadius -= 0.1;
-            }
-            this.handleRadius.set(handleRadius);
-            this.maxHandleRadius.set(handleRadius);
+            double handleRadius = newValue.doubleValue();
+            double maxHandleRadius = MugBoundaries.calculateMaxHandleRadius(this.height.get());
+            if (handleRadius > maxHandleRadius)
+                this.handleRadius.set(maxHandleRadius);
         });
 
         this.height.addListener((_, _, newValue) -> {
             double height = (double) newValue;
             double handleRadius = this.handleRadius.get();
-            while (MugBoundaries.HEIGHT_HANDLE_RADIUS_RATIO > height / handleRadius) {
-                handleRadius -= 0.1;
-            }
+            double maxHandleRadius = MugBoundaries.calculateMaxHandleRadius(height);
+            if (MugBoundaries.isHandleRadiusTooLarge(height, handleRadius))
+                handleRadius = maxHandleRadius;
+
+            this.maxHandleRadius.set(maxHandleRadius);
             this.handleRadius.set(handleRadius);
-            this.maxHandleRadius.set(handleRadius);
         });
     }
 
@@ -233,7 +231,7 @@ public class Mug extends Group implements MugLike {
         return handleRadius;
     }
 
-    public ObservableValue<? extends Number> maxHandleRadiusProperty() {
+    public ReadOnlyDoubleProperty maxHandleRadiusProperty() {
         return maxHandleRadius;
     }
 

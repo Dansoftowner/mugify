@@ -1,7 +1,6 @@
 package com.dansoftware.mugify.mug;
 
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.paint.Color;
 
 import java.util.Collection;
@@ -135,7 +134,7 @@ public class MugTuple implements MugLike {
         return handleRadius;
     }
 
-    public ObservableValue<? extends Number> maxHandleRadiusProperty() {
+    public ReadOnlyDoubleProperty maxHandleRadiusProperty() {
         return this.mugs.getFirst().maxHandleRadiusProperty();
     }
 

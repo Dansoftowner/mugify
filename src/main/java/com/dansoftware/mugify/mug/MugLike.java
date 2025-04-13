@@ -1,9 +1,6 @@
 package com.dansoftware.mugify.mug;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.paint.Color;
 
@@ -35,7 +32,7 @@ public interface MugLike {
     double getHandleRadius();
     void setHandleRadius(double handleRadius);
     DoubleProperty handleRadiusProperty();
-    ObservableValue<? extends Number> maxHandleRadiusProperty();
+    ReadOnlyDoubleProperty maxHandleRadiusProperty();
 
 
     Color getHandleColor();
