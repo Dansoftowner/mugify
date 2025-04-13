@@ -118,10 +118,10 @@ public class Mug extends Group implements MugLike {
     }
 
     private Node buildBottom() {
-        Cylinder bottom = new Cylinder(0, 0.1);
-        bottom.radiusProperty().bind(this.radius);
+        Cylinder bottom = new Cylinder(0, 1);
+        bottom.radiusProperty().bind(this.radius.subtract(0.1));
 
-        bottom.translateYProperty().bind(this.height.divide(100).multiply(51));
+        bottom.translateYProperty().bind(this.height.divide(2));
         PhongMaterial bottomMaterial = new PhongMaterial();
         bottomMaterial.diffuseColorProperty().bind(this.bottomColor);
         bottom.setMaterial(bottomMaterial);
