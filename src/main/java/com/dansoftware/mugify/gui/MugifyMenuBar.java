@@ -86,14 +86,18 @@ public class MugifyMenuBar extends MenuBar {
                 newValue.windowProperty().addListener(new ChangeListener<>() {
                     @Override
                     public void changed(ObservableValue<? extends Window> observable, Window oldValue, Window newValue) {
-                        var stage = (Stage) getScene().getWindow();
+                        var stage = (Stage) newValue;
                         String baseTitle = stage.getTitle();
 
                         StringBinding newTitle = Bindings.createStringBinding(() -> {
                             if (mugFilePath.get() == null)
                                 return baseTitle;
-                            return "%s - %s".formatted(baseTitle, mugFilePath.get());
-                        }, mugFilePath);
+
+                            String changeIndicator = persistenceState.get() == PersistenceState.UNSAVED_CHANGES ?
+                                                            "*" : "";
+
+                            return "%s - %s%s".formatted(baseTitle, changeIndicator, mugFilePath.get());
+                        }, mugFilePath, persistenceState);
 
                         stage.titleProperty().bind(newTitle);
                         observable.removeListener(this);
