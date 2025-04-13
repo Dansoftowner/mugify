@@ -8,6 +8,8 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -23,6 +25,8 @@ import static com.dansoftware.mugify.i18n.I18NUtils.*;
 import static com.dansoftware.mugify.util.UncheckedAction.run;
 
 public class MugifyMenuBar extends MenuBar {
+
+    public static final int MAX_RECENT_FILES = 10;
 
     public enum PersistenceState {
         /**
@@ -46,8 +50,8 @@ public class MugifyMenuBar extends MenuBar {
     private final MugRandomizer randomizer;
     private final MugChangeObserver mugChangeObserver;
     private final StringProperty mugFilePath;
-
     private final ObjectBinding<PersistenceState> persistenceState;
+    private final ObservableList<String> recentFiles = FXCollections.observableArrayList();
 
     public MugifyMenuBar(MainView mainView) {
         this.mainView = mainView;
@@ -103,6 +107,8 @@ public class MugifyMenuBar extends MenuBar {
         fileOpenItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
         menu.getItems().add(fileOpenItem);
 
+        menu.getItems().add(buildRecentFilesMenu());
+
         var fileSaveItem = fileSaveMenuItem();
         fileSaveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
         menu.getItems().add(fileSaveItem);
@@ -121,6 +127,51 @@ public class MugifyMenuBar extends MenuBar {
         return menu;
     }
 
+    private Menu buildRecentFilesMenu() {
+        Menu menu = new Menu();
+        menu.textProperty().bind(val("menu_file_recent"));
+        menu.setGraphic(new FontIcon(MaterialDesignH.HISTORY));
+        menu.setOnShowing(_ -> updateRecentFilesMenu(menu));
+        updateRecentFilesMenu(menu);
+        return menu;
+    }
+
+    private void updateRecentFilesMenu(Menu menu) {
+        menu.getItems().clear();
+        if (recentFiles.isEmpty()) {
+            MenuItem item = new MenuItem();
+            item.textProperty().bind(val("no_recent_files"));
+            item.setDisable(true);
+            menu.getItems().add(item);
+        } else {
+            for (String filePath : recentFiles) {
+                MenuItem item = new MenuItem(filePath);
+                item.setOnAction(_ -> openFile(filePath));
+                menu.getItems().add(item);
+            }
+        }
+    }
+
+    private void addToRecentFiles(String filePath) {
+        recentFiles.remove(filePath);
+        recentFiles.addFirst(filePath);
+        if (recentFiles.size() > MAX_RECENT_FILES) {
+            recentFiles.remove(MAX_RECENT_FILES);
+        }
+    }
+
+    private void openFile(String filePath) {
+        if (persistenceState.get() == PersistenceState.UNSAVED_CHANGES) {
+            if (!showUnsavedChangesAlert()) {
+                return;
+            }
+        }
+        run(() -> MugIO.loadFromJson(filePath, mugGrid.getMugTuple()));
+        mugChangeObserver.commit();
+        mugFilePath.set(filePath);
+        addToRecentFiles(filePath);
+    }
+
     private MenuItem fileSaveMenuItem() {
         var fileSaveItem = new MenuItem();
         fileSaveItem.textProperty().bind(val("menu_file_save"));
@@ -130,11 +181,10 @@ public class MugifyMenuBar extends MenuBar {
             if (persistenceState.get() == PersistenceState.UNSAVED) {
                 if (saveMugToNewFile())
                     mugChangeObserver.commit();
-            } else if (persistenceState.get() == PersistenceState.UNSAVED_CHANGES){
+            } else if (persistenceState.get() == PersistenceState.UNSAVED_CHANGES) {
                 run(() -> MugIO.saveToJson(mugFilePath.get(), mugGrid.getMugTuple()));
                 mugChangeObserver.commit();
             }
-
         });
         return fileSaveItem;
     }
@@ -144,8 +194,8 @@ public class MugifyMenuBar extends MenuBar {
         fileSaveAsItem.textProperty().bind(val("menu_file_save_as"));
         fileSaveAsItem.setGraphic(new FontIcon(MaterialDesignF.FLOPPY));
         fileSaveAsItem.setOnAction(_ -> {
-           if (saveMugToNewFile())
-               mugChangeObserver.commit();
+            if (saveMugToNewFile())
+                mugChangeObserver.commit();
         });
         return fileSaveAsItem;
     }
@@ -161,6 +211,7 @@ public class MugifyMenuBar extends MenuBar {
         if (outputFile != null) {
             run(() -> MugIO.saveToJson(outputFile.getAbsolutePath(), mugGrid.getMugTuple()));
             mugFilePath.set(outputFile.getAbsolutePath());
+            addToRecentFiles(outputFile.getAbsolutePath());
             return true;
         }
         return false;
@@ -171,24 +222,14 @@ public class MugifyMenuBar extends MenuBar {
         fileOpenItem.textProperty().bind(val("menu_file_open"));
         fileOpenItem.setGraphic(new FontIcon(MaterialDesignF.FOLDER_OPEN));
         fileOpenItem.setOnAction(_ -> {
-            if (persistenceState.get() == PersistenceState.UNSAVED_CHANGES) {
-                // if current mug's changes aren't saved
-                if (!showUnsavedChangesAlert()) {
-                    return;
-                }
-            }
-
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle(val("filechooser_open_title").get());
             fileChooser.getExtensionFilters().add(
                     new FileChooser.ExtensionFilter(val("filechooser_mugify_filter").get(), "*.mugify")
             );
             var file = fileChooser.showOpenDialog(getScene().getWindow());
-            if (file != null) {
-                run(() -> MugIO.loadFromJson(file.getAbsolutePath(), mugGrid.getMugTuple()));
-                mugChangeObserver.commit();
-                mugFilePath.set(file.getAbsolutePath());
-            }
+            if (file != null)
+                openFile(file.getAbsolutePath());
         });
         return fileOpenItem;
     }
