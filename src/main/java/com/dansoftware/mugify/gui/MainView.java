@@ -1,21 +1,26 @@
 package com.dansoftware.mugify.gui;
 
+import com.pixelduke.transit.Style;
 import com.pixelduke.transit.TransitStyleClass;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Window;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.materialdesign2.MaterialDesignA;
-import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
-import org.kordamp.ikonli.materialdesign2.MaterialDesignF;
-import org.kordamp.ikonli.materialdesign2.MaterialDesignP;
+import org.kordamp.ikonli.materialdesign2.*;
 
-import static com.dansoftware.mugify.i18n.I18NUtils.val;
+import java.util.Locale;
+
+import static com.dansoftware.mugify.i18n.I18NUtils.*;
 
 public class MainView extends BorderPane {
 
@@ -43,6 +48,7 @@ public class MainView extends BorderPane {
         setCenter(mugGrid);
         setRight(mugEditorTabPane);
         setLeft(mugDetailsView);
+        setBottom(new BottomToolbar());
 
         // for proper responsiveness
         mugGrid.maxWidthProperty().bind(this.widthProperty());
@@ -131,5 +137,101 @@ public class MainView extends BorderPane {
             toggle.selectedProperty().bindBidirectional(target);
             return toggle;
         }
+    }
+
+    private final class BottomToolbar extends BorderPane {
+
+        BottomToolbar() {
+            getStyleClass().add(TransitStyleClass.BACKGROUND);
+
+            var themeButton = buildThemeButton();
+            var languageButton = buildLanguageButton();
+
+            setCenter(new Group(new HBox(10, themeButton, languageButton)));
+        }
+
+        private MenuButton buildThemeButton() {
+            var themeGroup = new ToggleGroup();
+            var darkThemeItem = new RadioMenuItem();
+            darkThemeItem.textProperty().bind(val("theme_dark"));
+            darkThemeItem.setGraphic(new FontIcon(MaterialDesignM.MOON_WANING_CRESCENT));
+
+            var lightThemeItem = new RadioMenuItem();
+            lightThemeItem.textProperty().bind(val("theme_light"));
+            lightThemeItem.setGraphic(new FontIcon(MaterialDesignW.WHITE_BALANCE_SUNNY));
+
+            var syncThemeItem = new RadioMenuItem();
+            syncThemeItem.textProperty().bind(val("theme_sync"));
+            syncThemeItem.setGraphic(new FontIcon(MaterialDesignS.SYNC));
+
+            MenuButton themeButton = new MenuButton();
+            themeButton.textProperty().bind(val("menu_view_ui_theme"));
+            themeButton.getItems().addAll(darkThemeItem, lightThemeItem, syncThemeItem);
+
+            themeButton.setGraphic(new FontIcon(MaterialDesignT.THEME_LIGHT_DARK));
+
+            sceneProperty().addListener(new ChangeListener<>() {
+                @Override
+                public void changed(ObservableValue<? extends Scene> observableValue, Scene oldScene, Scene newScene) {
+                    newScene.windowProperty().addListener(new ChangeListener<>() {
+                        @Override
+                        public void changed(ObservableValue<? extends Window> observableValue, Window oldWin, Window win) {
+                            var window = (MainWindow) win;
+                            darkThemeItem.setSelected(Style.DARK == window.getTransitStyle());
+                            darkThemeItem.setOnAction(_ -> window.setTransitStyle(Style.DARK));
+
+                            lightThemeItem.setSelected(Style.LIGHT == window.getTransitStyle());
+                            lightThemeItem.setOnAction(_ -> window.setTransitStyle(Style.LIGHT));
+
+                            syncThemeItem.setSelected(window.isSyncTheme());
+                            syncThemeItem.setOnAction(_ -> window.setSyncTheme(true));
+
+                            window.transitStyleProperty().addListener((_, _, _) -> {
+                                if (!window.isSyncTheme()) {
+                                    darkThemeItem.setSelected(Style.DARK == window.getTransitStyle());
+                                    lightThemeItem.setSelected(Style.LIGHT == window.getTransitStyle());
+                                }
+                            });
+
+                            window.syncThemeProperty().addListener((_, _, syncTheme) -> {
+                                syncThemeItem.setSelected(syncTheme);
+                            });
+
+                            observableValue.removeListener(this);
+                        }
+                    });
+                    observableValue.removeListener(this);
+                }
+            });
+
+            darkThemeItem.setToggleGroup(themeGroup);
+            lightThemeItem.setToggleGroup(themeGroup);
+            syncThemeItem.setToggleGroup(themeGroup);
+
+            return themeButton;
+        }
+
+        private MenuButton buildLanguageButton() {
+            var menu = new MenuButton();
+            menu.textProperty().bind(val("menu_language"));
+            menu.setGraphic(new FontIcon(MaterialDesignG.GOOGLE_TRANSLATE));
+
+            ToggleGroup languageGroup = new ToggleGroup();
+
+            for (Locale locale : getSupportedLocales()) {
+                RadioMenuItem item = new RadioMenuItem(locale.getDisplayLanguage());
+                item.setToggleGroup(languageGroup);
+                item.setOnAction(_ -> setLocale(locale));
+                if (locale.equals(Locale.getDefault()))
+                    item.setSelected(true);
+                menu.getItems().add(item);
+                localeProperty().addListener((_, _, newLocale) -> {
+                    item.setSelected(locale.equals(newLocale));
+                });
+            }
+
+            return menu;
+        }
+
     }
 }

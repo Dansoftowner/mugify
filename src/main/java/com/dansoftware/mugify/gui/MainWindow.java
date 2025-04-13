@@ -4,7 +4,9 @@ import com.jthemedetecor.OsThemeDetector;
 import com.pixelduke.transit.Style;
 import com.pixelduke.transit.TransitTheme;
 import javafx.application.HostServices;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -24,7 +26,7 @@ public class MainWindow extends Stage {
     private final TransitTheme transitTheme;
     private final HostServices hostServices;
 
-    private boolean syncTheme;
+    private final SimpleBooleanProperty syncTheme = new SimpleBooleanProperty(this, "syncTheme");
     private final Consumer<Boolean> osThemeListener;
 
 
@@ -70,19 +72,23 @@ public class MainWindow extends Stage {
     }
 
     public boolean isSyncTheme() {
-        return syncTheme;
+        return syncTheme.get();
     }
 
     public void setSyncTheme(boolean syncTheme) {
-        if (this.syncTheme == syncTheme)
+        if (this.syncTheme.get() == syncTheme)
             return;
 
-        this.syncTheme = syncTheme;
+        this.syncTheme.set(syncTheme);
         if (syncTheme)
             OsThemeDetector.getDetector().registerListener(osThemeListener);
         else
             OsThemeDetector.getDetector().removeListener(osThemeListener);
-        setTransitStyle(OsThemeDetector.getDetector().isDark() ? Style.DARK : Style.LIGHT);
+        applyUIStyle(OsThemeDetector.getDetector().isDark() ? Style.DARK : Style.LIGHT);
+    }
+
+    public ReadOnlyBooleanProperty syncThemeProperty() {
+        return syncTheme;
     }
 
     /**

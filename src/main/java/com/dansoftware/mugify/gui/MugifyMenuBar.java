@@ -129,6 +129,9 @@ public class MugifyMenuBar extends MenuBar {
             if (locale.equals(Locale.getDefault()))
                 item.setSelected(true);
             menu.getItems().add(item);
+            localeProperty().addListener((_, _, newLocale) -> {
+                item.setSelected(locale.equals(newLocale));
+            });
         }
 
         return menu;
@@ -392,18 +395,36 @@ public class MugifyMenuBar extends MenuBar {
         syncThemeItem.textProperty().bind(val("theme_sync"));
         syncThemeItem.setGraphic(new FontIcon(MaterialDesignS.SYNC));
 
-        sceneProperty().addListener((_, _, _) -> {
-            getScene().windowProperty().addListener((_, _, win) -> {
-                var window = (MainWindow) win;
-                darkThemeItem.setSelected(Style.DARK == window.getTransitStyle());
-                darkThemeItem.setOnAction(_ -> window.setTransitStyle(Style.DARK));
+        sceneProperty().addListener(new ChangeListener<>() {
+            @Override
+            public void changed(ObservableValue<? extends Scene> observableValue, Scene oldScene, Scene newScene) {
+                newScene.windowProperty().addListener(new ChangeListener<>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Window> observableValue, Window oldWin, Window win) {
+                        var window = (MainWindow) win;
+                        darkThemeItem.setSelected(Style.DARK == window.getTransitStyle());
+                        darkThemeItem.setOnAction(_ -> window.setTransitStyle(Style.DARK));
 
-                lightThemeItem.setSelected(Style.LIGHT == window.getTransitStyle());
-                lightThemeItem.setOnAction(_ -> window.setTransitStyle(Style.LIGHT));
+                        lightThemeItem.setSelected(Style.LIGHT == window.getTransitStyle());
+                        lightThemeItem.setOnAction(_ -> window.setTransitStyle(Style.LIGHT));
 
-                syncThemeItem.setSelected(window.isSyncTheme());
-                syncThemeItem.setOnAction(_ -> window.setSyncTheme(true));
-            });
+                        syncThemeItem.setSelected(window.isSyncTheme());
+                        syncThemeItem.setOnAction(_ -> window.setSyncTheme(true));
+
+                        ChangeListener<? super Object> themeListener = (_, _, _) -> {
+                            darkThemeItem.setSelected(Style.DARK == window.getTransitStyle());
+                            lightThemeItem.setSelected(Style.LIGHT == window.getTransitStyle());
+                            syncThemeItem.setSelected(window.isSyncTheme());
+                        };
+
+                        window.transitStyleProperty().addListener(themeListener);
+                        window.syncThemeProperty().addListener(themeListener);
+
+                        observableValue.removeListener(this);
+                    }
+                });
+                observableValue.removeListener(this);
+            }
         });
 
         darkThemeItem.setToggleGroup(themeGroup);
