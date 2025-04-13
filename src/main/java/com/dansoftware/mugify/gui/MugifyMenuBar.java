@@ -6,15 +6,21 @@ import com.dansoftware.mugify.mug.MugRandomizer;
 import com.pixelduke.transit.Style;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign2.*;
 
@@ -69,7 +75,33 @@ public class MugifyMenuBar extends MenuBar {
                 return PersistenceState.SAVED;
         }, mugFilePath, mugChangeObserver.changedProperty());
 
+        this.initWindowTitleMechanism();
         this.buildMenuStructure();
+    }
+
+    private void initWindowTitleMechanism() {
+        sceneProperty().addListener(new ChangeListener<>() {
+            @Override
+            public void changed(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
+                newValue.windowProperty().addListener(new ChangeListener<>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Window> observable, Window oldValue, Window newValue) {
+                        var stage = (Stage) getScene().getWindow();
+                        String baseTitle = stage.getTitle();
+
+                        StringBinding newTitle = Bindings.createStringBinding(() -> {
+                            if (mugFilePath.get() == null)
+                                return baseTitle;
+                            return "%s - %s".formatted(baseTitle, mugFilePath.get());
+                        }, mugFilePath);
+
+                        stage.titleProperty().bind(newTitle);
+                        observable.removeListener(this);
+                    }
+                });
+                observable.removeListener(this);
+            }
+        });
     }
 
     private void buildMenuStructure() {
