@@ -29,6 +29,7 @@ application {
     mainModule = 'com.dansoftware.mugify'
     mainClass = 'com.dansoftware.mugify.Main'
     applicationDefaultJvmArgs = [
+            '-XX:+UseZGC',
             '--add-opens', 'javafx.graphics/javafx.stage=com.pixelduke.fxthemes',
             '--add-opens', 'javafx.graphics/com.sun.javafx.tk.quantum=com.pixelduke.fxthemes'
     ]
