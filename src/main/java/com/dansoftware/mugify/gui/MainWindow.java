@@ -1,5 +1,7 @@
 package com.dansoftware.mugify.gui;
 
+import com.dansoftware.mugify.config.Preferences;
+import com.dansoftware.mugify.i18n.I18NUtils;
 import com.jthemedetecor.OsThemeDetector;
 import com.pixelduke.transit.Style;
 import com.pixelduke.transit.TransitTheme;
@@ -21,21 +23,21 @@ public class MainWindow extends Stage {
     private static final String DARK_STYLESHEET = MainWindow.class.getResource("/com/dansoftware/mugify/css/dark.css").toExternalForm();
     private static final String LIGHT_STYLESHEET = MainWindow.class.getResource("/com/dansoftware/mugify/css/light.css").toExternalForm();
 
-    private static final Style DEFAULT_UI_STYLE = Style.DARK;
-
     private final TransitTheme transitTheme;
     private final HostServices hostServices;
 
     private final SimpleBooleanProperty syncTheme = new SimpleBooleanProperty(this, "syncTheme");
     private final Consumer<Boolean> osThemeListener;
 
+    private final Preferences preferences;
 
-    public MainWindow(HostServices hostServices) {
+    public MainWindow(Preferences preferences, HostServices hostServices) {
+        this.preferences = preferences;
         this.hostServices = hostServices;
-        this.transitTheme = new TransitTheme(DEFAULT_UI_STYLE);
+        this.transitTheme = new TransitTheme(preferences.getTheme());
         this.osThemeListener = isDark -> applyUIStyle(isDark ? Style.DARK : Style.LIGHT);
 
-        var mainView = new MainView();
+        var mainView = new MainView(preferences);
 
         var scene = new Scene(mainView);
         scene.getStylesheets().add(STYLESHEET);
@@ -46,12 +48,23 @@ public class MainWindow extends Stage {
 
         setOnShown(_ -> {
             this.transitTheme.setScene(scene);
-            applyUIStyle(DEFAULT_UI_STYLE); // to make the custom css applied
+            if (preferences.isSyncTheme())
+                setSyncTheme(true);
+            else
+                applyUIStyle(preferences.getTheme());
         });
+
+        initLocalePersistence();
 
         setSize();
         centerOnScreen();
         initIcon();
+    }
+
+    private void initLocalePersistence() {
+        I18NUtils.setLocale(preferences.getLocale());
+        I18NUtils.localeProperty().addListener(
+                (_, _, newLocale) -> preferences.setLocale(newLocale));
     }
 
     private void setSize() {
@@ -80,6 +93,8 @@ public class MainWindow extends Stage {
             return;
 
         this.syncTheme.set(syncTheme);
+        this.preferences.setSyncTheme(syncTheme);
+
         if (syncTheme)
             OsThemeDetector.getDetector().registerListener(osThemeListener);
         else
@@ -116,6 +131,7 @@ public class MainWindow extends Stage {
                 getScene().getStylesheets().add(DARK_STYLESHEET);
             }
         }
+        preferences.setTheme(style);
     }
 
     public Style getTransitStyle() {

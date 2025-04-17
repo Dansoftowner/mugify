@@ -1,5 +1,6 @@
 package com.dansoftware.mugify.gui;
 
+import com.dansoftware.mugify.config.Preferences;
 import com.dansoftware.mugify.io.MugIO;
 import com.dansoftware.mugify.mug.MugChangeObserver;
 import com.dansoftware.mugify.mug.MugRandomizer;
@@ -51,15 +52,19 @@ public class MugifyMenuBar extends MenuBar {
         SAVED
     }
 
+    private final Preferences preferences;
     private final MainView mainView;
     private final MugGrid mugGrid;
     private final MugRandomizer randomizer;
     private final MugChangeObserver mugChangeObserver;
     private final StringProperty mugFilePath;
     private final ObjectBinding<PersistenceState> persistenceState;
-    private final ObservableList<String> recentFiles = FXCollections.observableArrayList();
+    private final ObservableList<String> recentFiles = FXCollections.synchronizedObservableList(
+            FXCollections.observableArrayList()
+    );
 
-    public MugifyMenuBar(MainView mainView) {
+    public MugifyMenuBar(Preferences preferences, MainView mainView) {
+        this.preferences = preferences;
         this.mainView = mainView;
         this.mugFilePath = new SimpleStringProperty();
         this.mugGrid = mainView.getMugGrid();
@@ -74,6 +79,9 @@ public class MugifyMenuBar extends MenuBar {
             else
                 return PersistenceState.SAVED;
         }, mugFilePath, mugChangeObserver.changedProperty());
+
+        recentFiles.addAll(preferences.getRecentFiles());
+        preferences.setRecentFiles(recentFiles); // persisting recent files
 
         this.initWindowTitleMechanism();
         this.buildMenuStructure();

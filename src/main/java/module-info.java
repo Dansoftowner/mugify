@@ -10,4 +10,5 @@ module com.dansoftware.mugify {
     exports com.dansoftware.mugify;
 
     opens com.dansoftware.mugify.io to com.google.gson;
+    opens com.dansoftware.mugify.config to com.google.gson;
 }
