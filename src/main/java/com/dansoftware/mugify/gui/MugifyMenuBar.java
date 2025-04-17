@@ -14,6 +14,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -22,6 +23,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign2.*;
 
@@ -83,8 +85,32 @@ public class MugifyMenuBar extends MenuBar {
         recentFiles.addAll(preferences.getRecentFiles());
         preferences.setRecentFiles(recentFiles); // persisting recent files
 
+        this.initWindowCloseMechanism();
         this.initWindowTitleMechanism();
         this.buildMenuStructure();
+    }
+
+    private void initWindowCloseMechanism() {
+        EventHandler<WindowEvent> closeRequestHandler = (event) -> {
+            if (persistenceState.get() == PersistenceState.UNSAVED_CHANGES)
+                if (!showUnsavedChangesAlert())
+                    event.consume();
+        };
+
+        sceneProperty().addListener(new ChangeListener<>() {
+            @Override
+            public void changed(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
+                newValue.windowProperty().addListener(new ChangeListener<>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Window> observable, Window oldValue, Window newValue) {
+                        var stage = (Stage) newValue;
+                        stage.setOnCloseRequest(closeRequestHandler);
+                        observable.removeListener(this);
+                    }
+                });
+                observable.removeListener(this);
+            }
+        });
     }
 
     private void initWindowTitleMechanism() {
