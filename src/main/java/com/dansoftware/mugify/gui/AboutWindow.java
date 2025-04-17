@@ -48,6 +48,13 @@ public class AboutWindow extends Stage {
                 System.getProperty("java.vendor")
         ));
 
+        var javaFXInfoLabel = new Label();
+        javaFXInfoLabel.textProperty().bind(Bindings.concat(
+                val("about.javafx_version"),
+                " ",
+                System.getProperty("javafx.version")
+        ));
+
         var creatorLabel = new Label();
         creatorLabel.textProperty().bind(Bindings.concat(val("about.creator"), ": ", "Györffy Dániel"));
 
@@ -64,7 +71,7 @@ public class AboutWindow extends Stage {
             Clipboard.getSystemClipboard().setContent(cp);
         });
 
-        var vBox = new VBox(10, logo, titleLabel, versionLabel, javaInfoLabel, creatorLabel, copyButton, logoCreatorLink);
+        var vBox = new VBox(10, logo, titleLabel, versionLabel, javaInfoLabel, javaFXInfoLabel, creatorLabel, copyButton, logoCreatorLink);
         vBox.getStyleClass().add(TransitStyleClass.BACKGROUND);
         vBox.setAlignment(Pos.CENTER);
         vBox.setPadding(new Insets(20));
