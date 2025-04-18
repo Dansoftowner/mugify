@@ -16,7 +16,7 @@ Amikor a program elindul, egy kiinduló bögre példány már rendelkezésre ál
 ízlésünk szerint alakíthatunk. Van lehetőség **új, véletlenszerű bögrék generálására** is, ha úgy kívánjuk.
 
 
-## Az alkalmazás felületének struktúrája
+### Az alkalmazás felületének struktúrája
 
 A grafikus felület az alábbi fő részekből áll:
 * (**1**) Menüsáv (legfelül)
@@ -28,7 +28,7 @@ A grafikus felület az alábbi fő részekből áll:
 
 ![Alkalmazás felépítése](img/app_structure.png)
 
-## Felhasználói felület témái
+### Felhasználói felület témái
 
 Az alkalmazás rendelkezik **világos** és **sötét** móddal is. Sőt, arra is van lehetőség, hogy az alkalmazás felülete
 igazodjon az operációs rendszeren beállított felhasználói témához.
@@ -44,7 +44,7 @@ Következőképpen tudjuk ezeket a módokat váltogatni:
 2. Vagy az alsó eszköztárból:
     - ![](img/ui_themes_bottombar.png)
 
-## A felhasználói felület nyelve
+### A felhasználói felület nyelve
 
 A program úgy lett megírva, hogy több nyelvet is tudjon támogatni.
 Demonstrációként a program támogatja a magyar nyelven kívül az angol nyelvet is.
@@ -55,5 +55,53 @@ Következőképpen tudjuk a nyelveket váltogatni:
 2. Vagy az alsó eszköztárból:
     - ![](img/lang_bottombar.png)
 
-Amint valamelyik nyelvre átváltunk, a felület azonnal átvált a kívánt nyelvre.
+Amint valamelyik nyelvre átváltunk, a felület azonnal frissül a kívánt nyelvre.
 
+
+## A bögre szerkesztése
+
+A Mugify lehetővé teszi a bögrék teljes körű testreszabását az alábbi tulajdonságok beállításával:
+
+**Bögre teste**
+- **Magasság**: A bögre függőleges méretének beállítása.
+- **Alapkör sugara**: A bögre alapkörének sugara, amely a test szélességét határozza meg.
+- **Külső szín**: A bögre külső felületének színe.
+
+**Bögre belseje**
+- **Falvastagság**: A bögre falának vastagsága.
+- **Belső szín**: A bögre belső üregének színe, amely külön testreszabható a valósághű hatás érdekében.
+
+**Bögre fogantyúja**
+- **Fogantyú sugara**: A bögre falának felétől mért távolság, amely a fogantyú félkörének teljes körre kiegészített sugarát jelenti.
+- **Fogantyú vastagsága**: A fogantyú vastagságának beállítása.
+- **Fogantyú lekerekítése**: A fogantyú formája szögletes (görbített, négyzet alapú hasáb) vagy lekerekített (görbített henger) lehet, ami a 3D nézetben mutatkozik meg igazán.
+- **Fogantyú színe**: A fogantyú színe, amely független a bögre testétől.
+
+**Bögre alja**
+- **Alj színe**: A bögre aljának egyedi színe.
+
+_**A számértékű tulajdonságokat csak olyan határok között engedi mozgatni a program, hogy a megfelelő arányok ne sérüljenek.**_
+
+> A bögre fogantyújának maximális értéke például erősen függ a fogantyú magasságától (értelemszerűen). Ezért
+a program ezt nem egendi túlméretezni. Ha pedig a bögre magasságát csökkentjük, fogantyú sugara is vele együtt csökken, ha szükséges.
+
+A bögre jellemzőit a `Bögre szerkesztő panel` segítségével lehet állítani/módosítani, ami a jobb oldalon található:  
+![Bögreszerkesztő](img/mug_editor.png)
+
+A szerkesztő panelen belül legszélen jobboldalt találhatóak a különböző fülek, amelyek csoportosítják a 
+bögre tulajdonságait (bögre teste, bögre belseje, stb.), ezekre katintva tudjuk elérni az adott 
+"kategóriához" tartozó tulajdonságokat:  
+![Bögreszerkesztő fülei](img/mug_editor_tabs.png)
+
+A bögre számértékű tulajdonságai csúszkákkal állíthatók, a színek pedig színválasztó dialógusokkal.  
+![](img/color_picker.png)
+
+> _Ha a felhasználó ugyanazt a színt választja a bögre külsejének és a belsejének is, a program
+> egy kis árnyalattal megváltoztatja a belső színt, hogy "ne olvadjon" egybe a bögre külseje és belseje, hanem egyértelműen
+> meg lehessen különböztetni a bögre falát a bögre belsejétől!_
+
+A Bögre szerkesztő panel egyébként elrejthető a felső eszköztár jobb oldalán található gombbal:  
+![](img/mug_editor_toggle.png)
+
+Ez jól jöhet akkor, ha a felhasználó több helyet akar hagyni a bögre nézegető térnek. A gombra való újbóli kattintásra
+természetesen a panel újra visszahívható.
