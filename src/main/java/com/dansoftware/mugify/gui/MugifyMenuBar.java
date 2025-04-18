@@ -5,6 +5,7 @@ import com.dansoftware.mugify.io.MugIO;
 import com.dansoftware.mugify.mug.MugChangeObserver;
 import com.dansoftware.mugify.mug.MugRandomizer;
 import com.pixelduke.transit.Style;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.binding.StringBinding;
@@ -93,8 +94,11 @@ public class MugifyMenuBar extends MenuBar {
     private void initWindowCloseMechanism() {
         EventHandler<WindowEvent> closeRequestHandler = (event) -> {
             if (persistenceState.get() == PersistenceState.UNSAVED_CHANGES)
-                if (!showUnsavedChangesAlert())
+                if (!showUnsavedChangesAlert()) {
                     event.consume();
+                    return;
+                }
+            Platform.exit();
         };
 
         sceneProperty().addListener(new ChangeListener<>() {
