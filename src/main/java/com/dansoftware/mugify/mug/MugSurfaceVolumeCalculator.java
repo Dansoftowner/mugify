@@ -35,7 +35,7 @@ public class MugSurfaceVolumeCalculator {
         var outerBodyVolume = radiusPow.multiply(Math.PI).multiply(height); // radius^2*PI*height
         var innerRadius = radius.subtract(borderThickness.multiply(2));
         var innerRadiusPow = innerRadius.multiply(innerRadius);
-        var innerBodyVolume = innerRadiusPow.multiply(Math.PI).multiply(height);
+        var innerBodyVolume = innerRadiusPow.multiply(Math.PI).multiply(height.subtract(borderThickness));
 
         return outerBodyVolume.subtract(innerBodyVolume);
     }
@@ -65,7 +65,7 @@ public class MugSurfaceVolumeCalculator {
         var innerBottomSurface = innerRadius.multiply(innerRadius).multiply(Math.PI);
 
         var outerBodySurface = radius.multiply(2 * Math.PI).multiply(height);
-        var innerBodySurface = innerRadius.multiply(2 * Math.PI).multiply(height);
+        var innerBodySurface = innerRadius.multiply(2 * Math.PI).multiply(height.subtract(borderThickness));
 
         var borderSurface = bottomSurface.subtract(innerBottomSurface);
 
