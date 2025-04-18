@@ -152,3 +152,37 @@ A felszín a test felszínének és a fogantyú palást-felszínének összegéb
   - **Felszín**: `Kerület × Ívhossz`
 - **A bögre felszíne**: `test felszíne + fogantyú felszíne - 2 * fogantyú alapja`
   (A fogantyú alapjának területét kétszer levonjuk, mert a csatlakozási pontok nem részei a felszínnek.)
+
+### A bögre neve
+Ugyanitt, a `Bögre tulajdonságai panel`-ben lehet a bögrét elnevezni. Erre használható a panel tetején lévő szövegmező:
+![](img/name_field.png)
+
+A program automatikusan generál egy nevet a bögrének (az aktuális dátum és idő alapján), ez a név
+lesz automatikusan fájlnévként felajánlva a bögre fájlba való mentésekor (természetesen a fájlnak bármilyen más nevet is adhatunk).
+
+> Megjegyzés: a bögre neve akkor is el lesz mentve, ha a fájlnév és az itt megadott név eltérő.
+
+## A bögre nézetek
+
+A bögrének 4 féle nézete van:
+
+- ![](mdi:COFFEE) Oldalnézet: a bögrét oldalról mutatja be
+- ![](mdi:CIRCLE) Alulnézet: a bögrét alulról mutatja be
+- ![](mdi:CIRCLE_OUTLINE) Felülnézet: a bögrét felülről mutatja be
+- ![](mdi:CUBE) 3D nézet: **a bögrét 3D-s térben lehet a kurzorral mozgatni**
+
+Alapértelmezetten az alkalmazás mind a négy nézetet mutatja egyszerre:  
+![összes nézet](img/all_viewports.png)
+
+- Mindegyik nézet jobb felső sarkában van egy gomb (![](mdi:FULLSCREEN)), aminek segítségével ki lehet nagyítani az adott nézetet.
+- A nézetek váltogathatók a menüből is: ![](mdi:VIEW_GRID)  `Nézet` > ![](mdi:EYE) `Nézetek` > ...  
+
+- Valamint billentyűkombinációkkal:  
+
+| Nézet        | Billentyűkombináció |
+|--------------|---------------------|
+| Oldalnézet   | `CTRL + F1`         |
+| Felülnézet   | `CTRL + F2`         |
+| Alulnézet    | `CTRL + F3`         |
+| 3D nézet     | `CTRL + F4`         |
+| Összes nézet | `CTRL + F5`         |
