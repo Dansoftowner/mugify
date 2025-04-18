@@ -55,8 +55,15 @@ public class MugDetailsView extends ScrollPane {
         addPropertyRow(grid, 3, "mug_border_thickness", mug.borderThicknessProperty());
         addPropertyRow(grid, 4, "mug_handle_radius", mug.handleRadiusProperty());
         addPropertyRow(grid, 5, "mug_handle_width", mug.handleWidthProperty());
-        addPropertyRow(grid, 6, "mug_surface_area", mug.surfaceAreaProperty());
-        addPropertyRow(grid, 7, "mug_volume", mug.volumeProperty());
+        addPropertyStrRow(grid, 6, "mug_handle_shape",
+                Bindings.createStringBinding(
+                    () -> mug.isHandleRounded() ? val("mug_handle_rounded").get() : val("mug_handle_not_rounded").get(),
+                    mug.handleRoundedProperty(),
+                    val("mug_handle_rounded") // to make the text change when the language changes as well
+                )
+        );
+        addPropertyRow(grid, 7, "mug_surface_area", mug.surfaceAreaProperty());
+        addPropertyRow(grid, 8, "mug_volume", mug.volumeProperty());
 
         VBox vbox = new VBox();
 
@@ -82,6 +89,19 @@ public class MugDetailsView extends ScrollPane {
 
         Label valueLabel = new Label();
         valueLabel.textProperty().bind(createNumberStringBinding(property));
+
+        grid.add(new StackPane(label), 0, row);
+        grid.add(valueLabel, 1, row);
+    }
+
+    private void addPropertyStrRow(GridPane grid, int row, String i18nKey, ObservableValue<String> property) {
+        Label label = new Label();
+        label.textProperty().bind(val(i18nKey));
+        GridPane.setHgrow(label, Priority.ALWAYS);
+        StackPane.setAlignment(label, Pos.CENTER_LEFT);
+
+        Label valueLabel = new Label();
+        valueLabel.textProperty().bind(property);
 
         grid.add(new StackPane(label), 0, row);
         grid.add(valueLabel, 1, row);
