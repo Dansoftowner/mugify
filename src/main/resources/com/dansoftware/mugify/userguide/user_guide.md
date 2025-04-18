@@ -73,8 +73,8 @@ A Mugify lehetővé teszi a bögrék teljes körű testreszabását az alábbi t
 
 **Bögre fogantyúja**
 - **Fogantyú sugara**: A bögre falának felétől mért távolság, amely a fogantyú félkörének teljes körre kiegészített sugarát jelenti.
-- **Fogantyú vastagsága**: A fogantyú vastagságának beállítása.
 - **Fogantyú lekerekítése**: A fogantyú formája szögletes (görbített, négyzet alapú hasáb) vagy lekerekített (görbített henger) lehet, ami a 3D nézetben mutatkozik meg igazán.
+- **Fogantyú vastagsága**: Ha a foganytú formálya szögletes, ez a "görbítet hasáb" alapnégyzetének oldalhosszát jelenti, ha pedig a fogantyú formálya kerekített, akkor a "görbített henger" alapkörének átmérőjét jelenti.
 - **Fogantyú színe**: A fogantyú színe, amely független a bögre testétől.
 
 **Bögre alja**
@@ -105,3 +105,50 @@ A Bögre szerkesztő panel egyébként elrejthető a felső eszköztár jobb old
 
 Ez jól jöhet akkor, ha a felhasználó több helyet akar hagyni a bögre nézegető térnek. A gombra való újbóli kattintásra
 természetesen a panel újra visszahívható.
+
+## A bögre tulajdonságainak megtekintése
+A baloldalon található `Bögre tulajdonságai panel` a bögre jellemzőit mutatja meg összegezve.
+Itt tudjuk szövegszerűen elolvasni, hogy pontosan milyen értékeket is állítottuk be a `bögre szerkesztő`-ben
+lévő csúszkákkal:  
+![](img/mug_details.png)
+
+Itt megtalálhatóak a bögre felszínének és térfogatának a közelítő értékei is:  
+![](img/mug_surf_volume.png)
+
+Az alábbiakban megismerkedhetünk azzal, hogy a program milyen számolási menettel dolgozik:
+#### A bögre térfogatának számítása:
+- A bögre térfogata a test és a fogantyú térfogatának összege.
+- **_Test térfogata_**
+  - A bögre teste olyan, mint egy üreges henger:
+    - **Külső henger**: `sugár² × π × magasság`
+    - **Belső henger**: `(sugár - 2 × falvastagság)² × π × (magasság - falvastagság)`
+  - **Térfogat**: `Külső henger - Belső henger`
+- **_Fogantyú térfogata_**
+  - A fogantyú egy ívelt darab, aminek térfogata:
+  - **Alap területe**:
+     - Ha lekerekített: `(fogantyú_szélesség / 2)² × π`
+     - Ha szögletes: `fogantyú_szélesség²`
+  - **Ívhossz**: `fogantyú sugara × π`
+  - **Térfogat**: Alap területe × Ívhossz
+- **A bögre térfogata**: `test térfogata + fogantyú térfogata`
+
+#### A bögre felszínének számítása:
+
+A felszín a test felszínének és a fogantyú palást-felszínének összegéből áll, **de a fogantyú csatlakozási pontjait levonjuk**.
+
+- **A test felszíne** több részből tevődik össze:
+  - **Külső palást**: `2 × π × sugár × magasság`
+  - **Belső palást**: `2 × π × (sugár - 2 × falvastagság) × (magasság - falvastagság)`
+  - **Alsó külső alap**: `sugár² × π`
+  - **Alsó belső alap**: `(sugár - 2 × falvastagság)² × π`
+  - **A fal vastagságából adódó felszín (a bögre "pereme")**: `(külső alap - belső alap)`
+  - Összeadjuk ezeket, hogy megkapjuk a test teljes felszínét.
+
+- **A fogantyú felszíne:**
+  - **Alap kerülete**:
+     - Ha a fogantyú lekerekített: `2 × (fogantyú_szélesség / 2) × π`
+     - Szögletes: `4 × fogantyú_szélesség`
+  - **Ívhossz**: `fogantyú sugara × π`
+  - **Felszín**: `Kerület × Ívhossz`
+- **A bögre felszíne**: `test felszíne + fogantyú felszíne - 2 * fogantyú alapja`
+  (A fogantyú alapjának területét kétszer levonjuk, mert a csatlakozási pontok nem részei a felszínnek.)
