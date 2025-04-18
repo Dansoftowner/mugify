@@ -6,6 +6,7 @@ module com.dansoftware.mugify {
     requires org.kordamp.ikonli.materialdesign2;
     requires org.kordamp.ikonli.core;
     requires one.jpro.platform.mdfx;
+    requires animatefx;
 
     exports com.dansoftware.mugify;
 
