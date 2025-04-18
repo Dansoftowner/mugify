@@ -479,6 +479,17 @@ public class MugifyMenuBar extends MenuBar {
         var guideItem = new MenuItem();
         guideItem.textProperty().bind(val("menu_help_guide"));
         guideItem.setGraphic(new FontIcon(MaterialDesignH.HELP_CIRCLE));
+        guideItem.setOnAction(_ -> {
+            for (Window window : Window.getWindows()) {
+                if (window instanceof UserGuideWindow) {
+                    window.requestFocus();
+                    return;
+                }
+            }
+
+            var userGuideWindow = new UserGuideWindow((MainWindow) this.getScene().getWindow());
+            userGuideWindow.show();
+        });
 
         var aboutItem = new MenuItem();
         aboutItem.textProperty().bind(val("menu_help_about"));

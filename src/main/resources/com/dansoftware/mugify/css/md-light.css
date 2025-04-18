@@ -1,0 +1,23 @@
+.root * {
+
+    -mdfx-font-color: #3b3b3b;
+    -mdfx-border-color-1: #888;
+
+    -mdfx-bg-color-1: #ccc;
+    -mdfx-bg-color-2: #ddd;
+    -mdfx-bg-color-3: #eee;
+
+    -mdfx-link-color: blue;
+
+    -mdfx-bq-color-border: #4488cc;
+    -mdfx-bq-color-background: #0000ff0c;
+    -fx-text-alignment: justify;
+}
+
+.root {
+    -fx-padding: 5px 10px;
+}
+
+.markdown-normal-flow.markdown-normal-flow {
+   -fx-padding: 1px 10px;
+}
