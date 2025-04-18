@@ -6,6 +6,7 @@ import com.pixelduke.transit.TransitTheme;
 import javafx.application.HostServices;
 import javafx.beans.binding.Bindings;
 import javafx.scene.Cursor;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
@@ -15,10 +16,13 @@ import javafx.scene.layout.Priority;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import one.jpro.platform.mdfx.MarkdownView;
+import org.kordamp.ikonli.Ikon;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 
 import static com.dansoftware.mugify.i18n.I18NUtils.val;
 
@@ -100,6 +104,18 @@ public class UserGuideWindow extends Stage {
 
             @Override
             public Node generateImage(String url) {
+                if (url.startsWith("mdi:")) {
+                    String enumClassName = "org.kordamp.ikonli.materialdesign2.MaterialDesign" + url.charAt("mdi:".length());
+                    try {
+                        Class<?> clazz = Class.forName(enumClassName);
+                        Field field = clazz.getField(url.substring("mdi:".length()));
+                        Ikon icon = (Ikon) field.get(null);
+                        return new FontIcon(icon);
+                    } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
+                        e.printStackTrace(System.err);
+                        return new Group();
+                    }
+                }
                 return super.generateImage(UserGuideWindow.class.getResource("/com/dansoftware/mugify/userguide/%s".formatted(url)).toExternalForm());
             }
         };

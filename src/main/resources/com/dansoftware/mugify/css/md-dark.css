@@ -25,3 +25,8 @@
     -fx-background-color: #403f3c;
     -fx-background-radius: 5px;
 }
+
+.ikonli-font-icon {
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 20px;
+}

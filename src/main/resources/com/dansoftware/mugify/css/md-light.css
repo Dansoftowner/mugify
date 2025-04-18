@@ -21,3 +21,8 @@
 .markdown-normal-flow.markdown-normal-flow {
    -fx-padding: 1px 10px;
 }
+
+.ikonli-font-icon {
+    -fx-icon-color: #000000;
+    -fx-icon-size: 20px;
+}
