@@ -33,3 +33,7 @@
 .persistence-saved-label {
     -fx-background-color: #0bbd43;
 }
+
+.mug-details-view-content .mug-detail-value {
+  -fx-background-color: #403f3c;
+}

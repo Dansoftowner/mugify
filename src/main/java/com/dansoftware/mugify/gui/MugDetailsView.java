@@ -82,29 +82,22 @@ public class MugDetailsView extends ScrollPane {
     }
 
     private void addPropertyRow(GridPane grid, int row, String i18nKey, ObservableValue<? extends Number> property) {
-        Label label = new Label();
-        label.textProperty().bind(val(i18nKey));
-        GridPane.setHgrow(label, Priority.ALWAYS);
-        StackPane.setAlignment(label, Pos.CENTER_LEFT);
-
-        Label valueLabel = new Label();
-        valueLabel.textProperty().bind(createNumberStringBinding(property));
-
-        grid.add(new StackPane(label), 0, row);
-        grid.add(valueLabel, 1, row);
+        addPropertyStrRow(grid, row, i18nKey, createNumberStringBinding(property));
     }
 
     private void addPropertyStrRow(GridPane grid, int row, String i18nKey, ObservableValue<String> property) {
         Label label = new Label();
-        label.textProperty().bind(val(i18nKey));
+        label.textProperty().bind(Bindings.concat(val(i18nKey), ":"));
         GridPane.setHgrow(label, Priority.ALWAYS);
         StackPane.setAlignment(label, Pos.CENTER_LEFT);
 
         Label valueLabel = new Label();
+        valueLabel.getStyleClass().add("mug-detail-value");
         valueLabel.textProperty().bind(property);
+        StackPane.setAlignment(valueLabel, Pos.CENTER_LEFT);
 
         grid.add(new StackPane(label), 0, row);
-        grid.add(valueLabel, 1, row);
+        grid.add(new StackPane(valueLabel), 1, row);
     }
 
     private StringBinding createNumberStringBinding(ObservableValue<? extends Number> numberProperty) {

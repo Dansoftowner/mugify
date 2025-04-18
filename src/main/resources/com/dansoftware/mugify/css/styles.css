@@ -31,3 +31,8 @@
 .mug-grid .viewport-box {
     -fx-border-width: 0.5px;
 }
+
+.mug-details-view-content .mug-detail-value {
+  -fx-padding: 2px;
+  -fx-background-radius: 5px;
+}
