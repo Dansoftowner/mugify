@@ -480,6 +480,7 @@ public class MugifyMenuBar extends MenuBar {
         var guideItem = new MenuItem();
         guideItem.textProperty().bind(val("menu_help_guide"));
         guideItem.setGraphic(new FontIcon(MaterialDesignH.HELP_CIRCLE));
+        guideItem.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN));
         guideItem.setOnAction(_ -> {
             for (Window window : Window.getWindows()) {
                 if (window instanceof UserGuideWindow) {
