@@ -1,8 +1,11 @@
 package com.dansoftware.mugify.gui;
 
+import animatefx.animation.BounceIn;
+import animatefx.animation.FadeInUp;
 import com.dansoftware.mugify.mug.Mug;
 import com.dansoftware.mugify.mug.MugTuple;
 import com.pixelduke.transit.TransitStyleClass;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -277,6 +280,20 @@ public class MugGrid extends GridPane {
         GridPane.setRowSpan(vBox, 2);
         vBox.prefWidthProperty().bind(this.widthProperty());
         vBox.prefHeightProperty().bind(this.heightProperty());
+    }
+
+    public void playStartupAnimation() {
+        subScenes.forEach((_, mug) -> mug.setVisible(false));
+        Platform.runLater(() -> {
+            subScenes.forEach((_, mug) -> {
+                mug.setVisible(true);
+                new FadeInUp(mug).play();
+            });
+        });
+    }
+
+    public void playBounceAnimation() {
+        subScenes.forEach((_, mug) -> new BounceIn(mug).play());
     }
 
     public Viewport getViewport() {

@@ -321,6 +321,7 @@ public class MugifyMenuBar extends MenuBar {
 
             randomizer.apply(mugGrid.getMugTuple());
             mugFilePath.set(null);
+            mainView.getMugGrid().playBounceAnimation();
         });
         return generateItem;
     }

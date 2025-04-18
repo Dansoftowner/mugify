@@ -52,6 +52,8 @@ public class MainWindow extends Stage {
                 setSyncTheme(true);
             else
                 applyUIStyle(preferences.getTheme());
+
+            mainView.getMugGrid().playStartupAnimation();
         });
 
         initLocalePersistence();
