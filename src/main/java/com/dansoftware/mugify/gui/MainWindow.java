@@ -77,6 +77,8 @@ public class MainWindow extends Stage {
 
         setWidth(width);
         setHeight(height);
+        setMinWidth(1000);
+        setMinHeight(500);
     }
 
     private void initIcon() {
