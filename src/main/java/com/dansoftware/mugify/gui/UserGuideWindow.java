@@ -72,7 +72,7 @@ public class UserGuideWindow extends Stage {
         });
 
         this.centerOnScreen();
-        this.setWidth(Screen.getPrimary().getVisualBounds().getWidth() / 3);
+        this.setWidth(830);
         this.setHeight(Screen.getPrimary().getVisualBounds().getHeight() * 2 / 3);
     }
 
