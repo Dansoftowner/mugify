@@ -1,6 +1,6 @@
 # Mugify felhasználói útmutató
 
-*Készítette: Györffy Dániel Programtervező informatikus hallgató*
+*Készítette: **Györffy Dániel** Programtervező informatikus hallgató*
 
 > Az alkalmazás az Objektumorientált Programozás (GKNB_MSTM070) nevű tárgy félévi követelményeként készült ([sze.hu/~pusztai](http://www.sze.hu/~pusztai/)).
 
@@ -39,7 +39,7 @@ olyan szín(eke)t állítunk be a bögre példányunknak, ami nem jól látszik 
 ![A felület világos és sötét módban](img/ui_themes.png)
 
 Következőképpen tudjuk ezeket a módokat váltogatni:
-1. Menüsávból: `Nézet` > `Téma` > `Sötét`/`Világos`/`Szinkronizálás az op.rendszerrel`
+1. Menüsávból: **![](mdi:VIEW_GRID) Nézet > ![](mdi:THEME_LIGHT_DARK) Téma > `Sötét`/`Világos`/`Szinkronizálás az op.rendszerrel`**
     - ![](img/ui_themes_menubar.png)
 2. Vagy az alsó eszköztárból:
     - ![](img/ui_themes_bottombar.png)
@@ -50,7 +50,7 @@ A program úgy lett megírva, hogy több nyelvet is tudjon támogatni.
 Demonstrációként a program támogatja a magyar nyelven kívül az angol nyelvet is.
 
 Következőképpen tudjuk a nyelveket váltogatni:
-1. Menüsávból: `Nyelv` > `angol`/`magyar`
+1. Menüsávból: **![](mdi:GOOGLE_TRANSLATE) Nyelv > `angol`/`magyar`**
     - ![](img/lang_menubar.png)
 2. Vagy az alsó eszköztárból:
     - ![](img/lang_bottombar.png)
@@ -175,14 +175,23 @@ Alapértelmezetten az alkalmazás mind a négy nézetet mutatja egyszerre:
 ![összes nézet](img/all_viewports.png)
 
 - Mindegyik nézet jobb felső sarkában van egy gomb (![](mdi:FULLSCREEN)), aminek segítségével ki lehet nagyítani az adott nézetet.
-- A nézetek váltogathatók a menüből is: ![](mdi:VIEW_GRID)  `Nézet` > ![](mdi:EYE) `Nézetek` > ...  
+- A nézetek váltogathatók a menüből is: **![](mdi:VIEW_GRID) Nézet** > **![](mdi:EYE) Nézetek** > ...  
 
 - Valamint billentyűkombinációkkal:  
 
 | Nézet        | Billentyűkombináció |
-|--------------|---------------------|
+|--------------|:--------------------|
 | Oldalnézet   | `CTRL + F1`         |
 | Felülnézet   | `CTRL + F2`         |
 | Alulnézet    | `CTRL + F3`         |
 | 3D nézet     | `CTRL + F4`         |
 | Összes nézet | `CTRL + F5`         |
+
+## Új bögre generálása
+Van lehetőség véletlenszerűen előállítani egy új bögrét.
+Mind a méretek, mind a színek randomizálva vannak ilyenkor.
+
+- A menüsávból: **![](mdi:FOLDER) Fájl** > **![](mdi:SHUFFLE) Új bögre generálása**
+- Billentyűkombinációval: `Ctrl + G`
+
+![](img/mug_generate.gif)
