@@ -106,6 +106,9 @@ A Bögre szerkesztő panel egyébként elrejthető a felső eszköztár jobb old
 Ez jól jöhet akkor, ha a felhasználó több helyet akar hagyni a bögre nézegető térnek. A gombra való újbóli kattintásra
 természetesen a panel újra visszahívható.
 
+> A `bögre szerkesztő`-t ki/be lehet csukni a menüsávból is (lsd.: **![](mdi:VIEW_GRID) Nézet** menü),  
+> illetve a `Ctrl + Alt + E` billentyűkombinációval.
+
 ## A bögre tulajdonságainak megtekintése
 A baloldalon található `Bögre tulajdonságai panel` a bögre jellemzőit mutatja meg összegezve.
 Itt tudjuk szövegszerűen elolvasni, hogy pontosan milyen értékeket is állítottuk be a `bögre szerkesztő`-ben
@@ -162,6 +165,12 @@ lesz automatikusan fájlnévként felajánlva a bögre fájlba való mentésekor
 
 > Megjegyzés: a bögre neve akkor is el lesz mentve, ha a fájlnév és az itt megadott név eltérő.
 
+A Bögre tulajdonságai panel egyébként elrejthető a felső eszköztár bal oldalán található gombbal:  
+![](img/mug_details_toggle.png)
+
+> A `Bögre tulajdonságai panel`-t ki/be lehet csukni a menüsávból is (lsd.: **![](mdi:VIEW_GRID) Nézet** menü),  
+> illetve a `Ctrl + Alt + D` billentyűkombinációval.
+
 ## A bögre nézetek
 
 A bögrének 4 féle nézete van:
@@ -195,3 +204,5 @@ Mind a méretek, mind a színek randomizálva vannak ilyenkor.
 - Billentyűkombinációval: `Ctrl + G`
 
 ![](img/mug_generate.gif)
+
+## Fájlok kezelése
